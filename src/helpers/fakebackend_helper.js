@@ -98,6 +98,15 @@ export const deleteColors = (Colors) =>
 export const updateColors = (Colors) =>
   api.patch(url.UPDATE_Color + "/" + Colors._id, Colors);
 
+//Attribute
+export const getAttribute = () => api.get(url.GET_Attribute);
+export const addNewAttribute = (Attribute) =>
+  api.create(url.ADD_NEW_Attribute, Attribute);
+export const deleteAttribute = (Attribute) =>
+  api.delete(url.DELETE_Attribute + "/" + Attribute);
+export const updateAttribute = (Attribute) =>
+  api.patch(url.UPDATE_Attribute + "/" + Attribute._id, Attribute);
+
 // get Upcomming Events
 export const getUpCommingEvent = () => api.get(url.GET_UPCOMMINGEVENT);
 

@@ -27,6 +27,10 @@ import {
   getColors,
   updateColors,
   deleteColors,
+  addNewAttribute,
+  getAttribute,
+  updateAttribute,
+  deleteAttribute,
 } from "./thunk";
 export const initialState = {
   products: [],
@@ -38,6 +42,7 @@ export const initialState = {
   categories: [],
   brands: [],
   Colors: [],
+  Attribute: [],
   error: null,
 };
 
@@ -64,7 +69,6 @@ const EcommerceSlice = createSlice({
       state.error = action.error;
       state.isProductByIdSuccess = false; // Thêm trạng thái tương ứng
     });
-
 
     builder.addCase(addNewProduct.fulfilled, (state, action) => {
       state.products.push(action.payload.data.product);
@@ -289,8 +293,7 @@ const EcommerceSlice = createSlice({
 
     builder.addCase(deleteBrand.fulfilled, (state, action) => {
       state.brands = state.brands.filter(
-        (brand) =>
-          brand._id.toString() !== action.payload.brand.toString()
+        (brand) => brand._id.toString() !== action.payload.brand.toString()
       ); // Xóa thương hiệu khỏi danh sách thương hiệu
       state.error = null;
     });
@@ -334,13 +337,57 @@ const EcommerceSlice = createSlice({
 
     builder.addCase(deleteColors.fulfilled, (state, action) => {
       state.Colors = state.Colors.filter(
-        (Color) =>
-          Color._id.toString() !== action.payload.Colors.toString()
+        (Color) => Color._id.toString() !== action.payload.Colors.toString()
       ); // Xóa thương hiệu khỏi danh sách thương hiệu
       state.error = null;
     });
 
     builder.addCase(deleteColors.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể xóa thương hiệu
+    });
+
+    // Reducers for Attribute
+    builder.addCase(getAttribute.fulfilled, (state, action) => {
+      state.Attribute = action.payload.data; // Gán danh sách thương hiệu từ payload vào state
+      state.error = null;
+    });
+
+    builder.addCase(getAttribute.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể lấy danh sách thương hiệu
+    });
+
+    builder.addCase(addNewAttribute.fulfilled, (state, action) => {
+      state.Attribute.push(action.payload.data); // Thêm thương hiệu mới vào danh sách thương hiệu
+      state.isBrandCreated = true; // Đặt cờ để cho biết thương hiệu đã được tạo thành công
+      state.error = null;
+    });
+
+    builder.addCase(addNewAttribute.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể thêm mới thương hiệu
+    });
+
+    builder.addCase(updateAttribute.fulfilled, (state, action) => {
+      state.Attribute = state.Attribute.map((Attribute) =>
+        Attribute._id.toString() === action.payload.data._id.toString()
+          ? { ...Attribute, ...action.payload.data }
+          : Attribute
+      ); // Cập nhật thông tin thương hiệu trong danh sách thương hiệu
+      state.error = null;
+    });
+
+    builder.addCase(updateAttribute.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể cập nhật thương hiệu
+    });
+
+    builder.addCase(deleteAttribute.fulfilled, (state, action) => {
+      state.Attribute = state.Attribute.filter(
+        (Attribute) =>
+          Attribute._id.toString() !== action.payload.Attribute.toString()
+      ); // Xóa thương hiệu khỏi danh sách thương hiệu
+      state.error = null;
+    });
+
+    builder.addCase(deleteAttribute.rejected, (state, action) => {
       state.error = action.error; // Xử lý lỗi khi không thể xóa thương hiệu
     });
   },

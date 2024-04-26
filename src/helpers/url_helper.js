@@ -54,6 +54,11 @@ export const GET_Color = "apps/Color";
 export const DELETE_Color = "/apps/Color";
 export const ADD_NEW_Color = "/apps/Color";
 export const UPDATE_Color = "/apps/Color";
+//Attribute
+export const GET_Attribute = "apps/Attribute";
+export const DELETE_Attribute = "/apps/Attribute";
+export const ADD_NEW_Attribute = "/apps/Attribute";
+export const UPDATE_Attribute = "/apps/Attribute";
 // Orders
 export const GET_ORDERS = "/apps/order";
 export const GET_ORDER_BY_ID = "/apps/order";
@@ -127,7 +132,8 @@ export const GET_MONTHLY_DATA = "/monthly-data";
 // Audiences Metrics
 export const GET_ALLAUDIENCESMETRICS_DATA = "/allAudiencesMetrics-data";
 export const GET_MONTHLYAUDIENCESMETRICS_DATA = "/monthlyAudiencesMetrics-data";
-export const GET_HALFYEARLYAUDIENCESMETRICS_DATA = "/halfyearlyAudiencesMetrics-data";
+export const GET_HALFYEARLYAUDIENCESMETRICS_DATA =
+  "/halfyearlyAudiencesMetrics-data";
 export const GET_YEARLYAUDIENCESMETRICS_DATA = "/yearlyAudiencesMetrics-data";
 
 // Users by Device

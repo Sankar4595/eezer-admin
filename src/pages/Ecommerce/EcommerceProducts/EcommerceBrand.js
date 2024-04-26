@@ -52,6 +52,7 @@ const EcommerceBrand = (props) => {
 
   const dispatch = useDispatch();
   const selectLayoutState = (state) => state.Ecommerce;
+
   const ecomBrandsProperties = createSelector(selectLayoutState, (ecom) => ({
     brands: ecom.brands,
     error: ecom.error,
@@ -60,23 +61,24 @@ const EcommerceBrand = (props) => {
   const { brands, error } = useSelector(ecomBrandsProperties);
   const [name, setName] = useState("");
   const [actionTriggered, setActionTriggered] = useState(false);
-  // useEffect(() => {
-  //   if (!brands || brands.length === 0) {
-  //     dispatch(onGetBrands());
-  //   }
-  // }, [dispatch, brands]);
-  // useEffect(() => {
-  //   if (actionTriggered) {
-  //     // Thực hiện các công việc cần thiết khi một trong ba hàm được gọi
-  //     if (error === null) {
-  //       handleAlert(true);
-  //     } else if (error) {
-  //       handleAlert(false);
-  //     }
-  //     // Đặt lại actionTriggered thành false sau khi hoàn thành
-  //     setActionTriggered(false);
-  //   }
-  // }, [actionTriggered, error]);
+  useEffect(() => {
+    if (!brands || brands.length === 0) {
+      dispatch(onGetBrands());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (actionTriggered) {
+      // Thực hiện các công việc cần thiết khi một trong ba hàm được gọi
+      if (error === null) {
+        handleAlert(true);
+      } else if (error) {
+        handleAlert(false);
+      }
+      // Đặt lại actionTriggered thành false sau khi hoàn thành
+      setActionTriggered(false);
+    }
+  }, [actionTriggered]);
 
   const addBrand = async () => {
     if (name.trim() === "") {
@@ -87,6 +89,7 @@ const EcommerceBrand = (props) => {
       name: name,
     };
     await dispatch(onAddNewBrand(newBrand));
+    await dispatch(onGetBrands());
     setName("");
     setActionTriggered(true);
   };
@@ -374,6 +377,7 @@ const EcommerceBrand = (props) => {
 
           <Select
             name="brand"
+            isMulti
             options={brandOptions}
             value={props.brandId}
             onBlur={props.handleBrandBlur}

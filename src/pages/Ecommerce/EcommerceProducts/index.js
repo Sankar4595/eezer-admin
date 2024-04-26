@@ -543,7 +543,7 @@ const EcommerceProducts = (props) => {
                               </div>
                               <div className="flex-shrink-0 ms-2">
                                 <span className="badge bg-light text-muted">
-                                  {category.products.length}
+                                  {category?.products?.length}
                                 </span>
                               </div>
                             </Link>

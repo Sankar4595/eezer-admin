@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 //Include Both Helper File with needed methods
 import {
   getProducts as getProductsApi,
@@ -31,6 +30,10 @@ import {
   addNewColors as addNewColorsApi,
   updateColors as updateColorsApi,
   deleteColors as deleteColorsApi,
+  getAttribute as getAttributeApi,
+  addNewAttribute as addNewAttributeApi,
+  updateAttribute as updateAttributeApi,
+  deleteAttribute as deleteAttributeApi,
 } from "../../helpers/fakebackend_helper";
 
 export const getProducts = createAsyncThunk(
@@ -390,6 +393,62 @@ export const addNewBrand = createAsyncThunk(
       return data;
     } catch (error) {
       toast.error("Brand Added Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const getAttribute = createAsyncThunk(
+  "ecommerce/getAttribute",
+  async () => {
+    try {
+      const response = await getAttributeApi(); // Gọi API để lấy danh sách thương hiệu
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const updateAttribute = createAsyncThunk(
+  "ecommerce/updateAttribute",
+  async (Attribute) => {
+    try {
+      const response = updateAttributeApi(Attribute); // Gọi API cập nhật thông tin thương hiệu
+      const data = await response;
+      toast.success("Attribute Updated Successfully", { autoClose: 3000 });
+      return data;
+    } catch (error) {
+      toast.error("Attribute Updated Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const deleteAttribute = createAsyncThunk(
+  "ecommerce/deleteAttribute",
+  async (Attribute) => {
+    try {
+      const response = await deleteAttributeApi(Attribute); // Gọi API xóa thương hiệu
+      toast.success("Attribute Deleted Successfully", { autoClose: 3000 });
+      return { Attribute, ...response };
+    } catch (error) {
+      toast.error("Attribute Deleted Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const addNewAttribute = createAsyncThunk(
+  "ecommerce/addNewAttribute",
+  async (Attribute) => {
+    try {
+      const response = addNewAttributeApi(Attribute); // Gọi API thêm thương hiệu mới
+      const data = await response;
+      toast.success("Attribute Added Successfully", { autoClose: 3000 });
+      return data;
+    } catch (error) {
+      toast.error("Attribute Added Failed", { autoClose: 3000 });
       throw error;
     }
   }

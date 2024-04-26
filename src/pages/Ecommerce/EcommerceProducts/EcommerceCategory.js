@@ -63,23 +63,24 @@ const EcommerceCategory = (props) => {
   const { categories, error } = useSelector(ecomCategoriesProperties);
   const [name, setName] = useState("");
   const [actionTriggered, setActionTriggered] = useState(false);
-  // useEffect(() => {
-  //   if (!categories || categories.length === 0) {
-  //     dispatch(onGetCategories());
-  //   }
-  // }, [dispatch, categories]);
-  // useEffect(() => {
-  //   if (actionTriggered) {
-  //     // Thực hiện các công việc cần thiết khi một trong ba hàm được gọi
-  //     if (error === null) {
-  //       handleAlert(true);
-  //     } else if (error) {
-  //       handleAlert(false);
-  //     }
-  //     // Đặt lại actionTriggered thành false sau khi hoàn thành
-  //     setActionTriggered(false);
-  //   }
-  // }, [actionTriggered, error]);
+  useEffect(() => {
+    if (!categories || categories.length === 0) {
+      dispatch(onGetCategories());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (actionTriggered) {
+      // Thực hiện các công việc cần thiết khi một trong ba hàm được gọi
+      if (error === null) {
+        handleAlert(true);
+      } else if (error) {
+        handleAlert(false);
+      }
+      // Đặt lại actionTriggered thành false sau khi hoàn thành
+      setActionTriggered(false);
+    }
+  }, [actionTriggered]);
 
   const addCategory = async () => {
     if (name.trim() === "") {
@@ -90,6 +91,7 @@ const EcommerceCategory = (props) => {
       name: name,
     };
     await dispatch(onAddNewCategory(newCategory));
+    await dispatch(onGetCategories());
     setName("");
     setActionTriggered(true);
   };
@@ -385,6 +387,7 @@ const EcommerceCategory = (props) => {
 
           <Select
             name="category"
+            isMulti
             options={categoryOptions}
             value={props.categoryId}
             onChange={(selectedOption) => {

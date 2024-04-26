@@ -13,6 +13,7 @@ import {
   Form,
   Row,
   Alert,
+  Table,
 } from "reactstrap";
 
 // Redux
@@ -55,6 +56,8 @@ const EcommerceAddProduct = (props) => {
   const history = useNavigate();
   const productId = useParams();
   const [isEditMode, setIsEditMode] = useState(false);
+  const [attributeData, setAttributeData] = useState([]);
+  console.log("attributeData: ", attributeData);
 
   const [customActiveTab, setcustomActiveTab] = useState("1");
   const toggleCustom = (tab) => {
@@ -106,6 +109,10 @@ const EcommerceAddProduct = (props) => {
         validation.setFieldValue("colorId", {
           value: foundProduct.brand._id,
           label: foundProduct.brand.name,
+        });
+        validation.setFieldValue("attributes", {
+          value: foundProduct.attribute._id,
+          label: foundProduct.attribute.name,
         });
         validation.setFieldValue("categoryId", {
           value: foundProduct.category._id,
@@ -240,10 +247,16 @@ const EcommerceAddProduct = (props) => {
   const handleColorChange = (colorId) => {
     validation.setFieldValue("colorId", colorId);
   };
+  const handleattributeChange = (attributeId) => {
+    validation.setFieldValue("attributeId", attributeId);
+  };
   const handleBrandBlur = () => {
     validation.handleBlur;
   };
   const handleColorBlur = () => {
+    validation.handleBlur;
+  };
+  const handleattributeBlur = () => {
     validation.handleBlur;
   };
   //json gửi đi
@@ -257,6 +270,7 @@ const EcommerceAddProduct = (props) => {
       categoryId: null,
       brandId: null,
       colorId: [],
+      attributeId: [],
       specification: "",
       description: "",
       linkrv: "",
@@ -290,6 +304,9 @@ const EcommerceAddProduct = (props) => {
         .required("Please select a category"),
       brandId: Yup.object().nullable(false).required("Please select a brand"),
       colorId: Yup.array().nullable(false).required("Please select a color"),
+      attributeId: Yup.array()
+        .nullable(false)
+        .required("Please select a attribute"),
       description: Yup.string()
         .required("Please enter product description")
         .max(3000, "Cannot exceed 3000 characters"),
@@ -329,6 +346,9 @@ const EcommerceAddProduct = (props) => {
         values.colorId.forEach((file) => {
           newProduct.append("colorId", file);
         });
+        values.attributeId.forEach((file) => {
+          newProduct.append("attributes", file);
+        });
         await dispatch(onAddNewProduct(newProduct));
         await dispatch(onGetProducts());
         history("/apps-ecommerce-products");
@@ -353,11 +373,80 @@ const EcommerceAddProduct = (props) => {
     validation.values.description
   );
   useEffect(() => {
-    // Theo dõi sự thay đổi của validation.values.description
-    // và cập nhật state CKEditor khi có sự thay đổi
     setEditorDesData(validation.values.description);
     setEditorSpecData(validation.values.specification);
-  }, [validation.values.description, validation.values.specification]);
+  }, [
+    validation.values.description,
+    validation.values.specification,
+    validation.values.colorId,
+  ]);
+  console.log("validation.values.colorId: ", validation.values.colorId);
+
+  const handleAttributeDataChange = (e, value) => {
+    setAttributeData((prev) => {
+      const index = prev.findIndex((item) => item.value === value.value);
+      if (index !== -1) {
+        const updatedData = [...prev];
+        updatedData[index].data = e;
+        return updatedData;
+      } else {
+        return [...prev, { ...value, data: e }];
+      }
+    });
+  };
+
+  const generateCombinations = (
+    data,
+    currentCombination = [],
+    index = 0,
+    combinations = []
+  ) => {
+    if (index === data?.length) {
+      combinations?.push([...currentCombination]);
+      return;
+    }
+
+    const category = data[index];
+    category?.data?.forEach((variation) => {
+      currentCombination.push(variation);
+      generateCombinations(data, currentCombination, index + 1, combinations);
+      currentCombination.pop();
+    });
+
+    return combinations;
+  };
+
+  // Function to render table rows
+  let resultColor = {
+    label: "color",
+    value: "color",
+    data: validation.values.colorId,
+  };
+  const renderRows = () => {
+    const combinations = generateCombinations([...attributeData, resultColor]);
+    return combinations?.map((combination, rowIndex) => (
+      <tr key={`row-${rowIndex}`}>
+        {combination.map((variation, colIndex) => (
+          <React.Fragment key={`col-${colIndex}`}>
+            <td>{variation.label}</td>
+            {colIndex === combination.length - 1 && (
+              <>
+                <td>
+                  <Input type="text" placeholder="SKU" />
+                </td>
+                <td>
+                  <Input type="number" placeholder="Qty" />
+                </td>
+                <td>
+                  <Input type="file" />
+                </td>
+              </>
+            )}
+          </React.Fragment>
+        ))}
+      </tr>
+    ));
+  };
 
   return (
     <div className="page-content">
@@ -440,9 +529,32 @@ const EcommerceAddProduct = (props) => {
                   customActiveTab={customActiveTab}
                   toggleCustom={toggleCustom}
                   validation={validation}
-
                 />
                 {/* other components */}
+                <Card>
+                  <CardHeader>
+                    <h5 className="card-title mb-0">
+                      Product Variation + Price
+                    </h5>{" "}
+                  </CardHeader>
+                  <CardBody>
+                    <Table bordered>
+                      <thead>
+                        <tr>
+                          {[...attributeData, resultColor].map((category) => (
+                            <th key={`header-${category.label}`}>
+                              {category.label}
+                            </th>
+                          ))}
+                          <th>SKU</th>
+                          <th>Qty</th>
+                          <th>Image Upload</th>
+                        </tr>
+                      </thead>
+                      <tbody>{renderRows()}</tbody>
+                    </Table>
+                  </CardBody>
+                </Card>
               </div>
 
               <div className="text-end mb-3">
@@ -481,7 +593,7 @@ const EcommerceAddProduct = (props) => {
                       }}
                     />
                     {validation.touched.isPublish &&
-                      validation.errors.isPublish ? (
+                    validation.errors.isPublish ? (
                       <Alert color="danger">
                         <strong>An error occurred! </strong>
                         {validation.errors.isPublish}
@@ -515,12 +627,48 @@ const EcommerceAddProduct = (props) => {
               />
 
               <EcommerceAttributes
-                ColorId={validation.values.colorId}
-                errors={validation.errors.colorId}
-                blur={validation.touched.colorId}
-                handleColorBlur={handleColorBlur}
-                handleColorChange={handleColorChange}
+                AttributeId={validation.values.attributeId}
+                errors={validation.errors.attributeId}
+                blur={validation.touched.attributeId}
+                handleAttributeBlur={handleattributeBlur}
+                handleAttributeChange={handleattributeChange}
               />
+
+              {validation?.values?.attributeId?.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <h5 className="card-title mb-0">
+                      Choose the attributes of this product and then input
+                      values of each attribute
+                    </h5>
+                  </CardHeader>
+                  <CardBody>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "15px",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {validation?.values?.attributeId?.length > 0 &&
+                        validation?.values?.attributeId.map((val, i) => {
+                          return (
+                            <Select
+                              key={i}
+                              name={val.label}
+                              isMulti
+                              options={val.data}
+                              onChange={(e) => {
+                                handleAttributeDataChange(e, val);
+                              }}
+                            />
+                          );
+                        })}
+                    </div>
+                  </CardBody>
+                </Card>
+              )}
 
               <Card
                 onMouseEnter={handleCardMouseEnter}
