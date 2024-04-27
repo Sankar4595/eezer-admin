@@ -14,6 +14,8 @@ import {
   Row,
   Alert,
   Table,
+  InputGroup,
+  InputGroupText,
 } from "reactstrap";
 
 // Redux
@@ -57,15 +59,13 @@ const EcommerceAddProduct = (props) => {
   const productId = useParams();
   const [isEditMode, setIsEditMode] = useState(false);
   const [attributeData, setAttributeData] = useState([]);
-  console.log("attributeData: ", attributeData);
-
   const [customActiveTab, setcustomActiveTab] = useState("1");
   const toggleCustom = (tab) => {
     if (customActiveTab !== tab) {
       setcustomActiveTab(tab);
     }
   };
-
+  const [variation, setVariation] = useState([]);
   const dispatch = useDispatch();
   const selectDashboardData = createSelector(
     (state) => state.Ecommerce.products,
@@ -87,6 +87,7 @@ const EcommerceAddProduct = (props) => {
       const foundProduct = products.find(
         (product) => product._id === productId._id
       );
+      console.log("foundProduct: ", foundProduct);
       // Cập nhật giá trị của selectedProduct khi tìm thấy sản phẩm
       if (foundProduct) {
         await setSelectedProduct(foundProduct);
@@ -102,24 +103,35 @@ const EcommerceAddProduct = (props) => {
           (option) => option.value === foundProduct.isPublish
         );
         validation.setFieldValue("isPublish", isPublishOption);
-        validation.setFieldValue("brandId", {
-          value: foundProduct.brand._id,
-          label: foundProduct.brand.name,
-        });
-        validation.setFieldValue("colorId", {
-          value: foundProduct.brand._id,
-          label: foundProduct.brand.name,
-        });
-        validation.setFieldValue("attributes", {
-          value: foundProduct.attribute._id,
-          label: foundProduct.attribute.name,
-        });
-        validation.setFieldValue("categoryId", {
-          value: foundProduct.category._id,
-          label: foundProduct.category.name,
-        });
+        validation.setFieldValue("brandArr", JSON.parse(foundProduct.brandArr));
+        validation.setFieldValue(
+          "colorArr",
+          JSON.parse(foundProduct?.colorArr)
+        );
+
+        validation.setFieldValue(
+          "categoryArr",
+          JSON.parse(foundProduct.categoryArr)
+        );
+
+        validation.setFieldValue("video", foundProduct.video);
+        validation.setFieldValue("weight", foundProduct.weight);
+        validation.setFieldValue(
+          "discountenddate",
+          foundProduct.discountenddate
+        );
+        validation.setFieldValue("cgst", foundProduct.cgst);
+        validation.setFieldValue("sgst", foundProduct.sgst);
+        validation.setFieldValue("shippingdays", foundProduct.shippingdays);
+        validation.setFieldValue("cod", foundProduct.cod);
+        validation.setFieldValue(
+          "productVariation",
+          JSON.parse(foundProduct.productVariation)
+        );
+        setVariation(foundProduct.productVariation);
         await setselectedFiles(foundProduct.images);
         validation.setFieldValue("images", selectedFiles);
+        validation.setFieldValue("attributeArr", foundProduct?.attributeArr);
       }
     };
 
@@ -236,19 +248,19 @@ const EcommerceAddProduct = (props) => {
     },
   ];
   const handleCategoryChange = (categoryId) => {
-    validation.setFieldValue("categoryId", categoryId);
+    validation.setFieldValue("categoryArr", categoryId);
   };
   const handleCategoryBlur = () => {
     validation.handleBlur;
   };
   const handleBrandChange = (brandId) => {
-    validation.setFieldValue("brandId", brandId);
+    validation.setFieldValue("brandArr", brandId);
   };
   const handleColorChange = (colorId) => {
-    validation.setFieldValue("colorId", colorId);
+    validation.setFieldValue("colorArr", colorId);
   };
   const handleattributeChange = (attributeId) => {
-    validation.setFieldValue("attributeId", attributeId);
+    validation.setFieldValue("attributeArr", attributeId);
   };
   const handleBrandBlur = () => {
     validation.handleBlur;
@@ -267,13 +279,20 @@ const EcommerceAddProduct = (props) => {
       stock: "",
       price: "",
       newPrice: "",
-      categoryId: null,
-      brandId: null,
-      colorId: [],
-      attributeId: [],
+      categoryArr: [],
+      brandArr: [],
+      colorArr: [],
+      attributeArr: [],
       specification: "",
       description: "",
-      linkrv: "",
+      video: "",
+      weight: "",
+      discountenddate: "",
+      cgst: "",
+      sgst: "",
+      shippingdays: "",
+      cod: false,
+      productVariation: [],
       discount: 0,
       isPublish: null,
       images: [],
@@ -299,12 +318,12 @@ const EcommerceAddProduct = (props) => {
       isPublish: Yup.object()
         .nullable(false)
         .required("Please select display status"),
-      categoryId: Yup.object()
+      categoryArr: Yup.array()
         .nullable(false)
         .required("Please select a category"),
-      brandId: Yup.object().nullable(false).required("Please select a brand"),
-      colorId: Yup.array().nullable(false).required("Please select a color"),
-      attributeId: Yup.array()
+      brandArr: Yup.array().nullable(false).required("Please select a brand"),
+      colorArr: Yup.array().nullable(false).required("Please select a color"),
+      attributeArr: Yup.array()
         .nullable(false)
         .required("Please select a attribute"),
       description: Yup.string()
@@ -325,6 +344,16 @@ const EcommerceAddProduct = (props) => {
           return value && value.length >= 1;
         }
       ),
+      video: Yup.string().optional("Please enter video link"),
+      weight: Yup.string().optional("Please enter weight"),
+      discountenddate: Yup.string().optional("Please enter discountenddate"),
+      cgst: Yup.number().optional("Please enter cgst"),
+      sgst: Yup.number().optional("Please enter sgst"),
+      shippingdays: Yup.number().optional("Please enter shippingdays"),
+      cod: Yup.boolean().optional("Please enter cash on delivery"),
+      productVariation: Yup.array().optional(
+        "Please enter productVariation details"
+      ),
     }),
     onSubmit: async (values) => {
       // Xử lý dữ liệu khác
@@ -334,20 +363,24 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("price", values.price);
       newProduct.append("stock", values.stock);
       newProduct.append("discount", values.discount);
-      newProduct.append("categoryId", values.categoryId.value);
-      newProduct.append("brandId", values.brandId.value);
       newProduct.append("isPublish", values.isPublish.value);
       newProduct.append("description", values.description);
       newProduct.append("specification", values.specification);
+      newProduct.append("video", values.video);
+      newProduct.append("weight", values.weight);
+      newProduct.append("discountenddate", values.discountenddate);
+      newProduct.append("cgst", values.cgst);
+      newProduct.append("sgst", values.sgst);
+      newProduct.append("shippingdays", values.shippingdays);
+      newProduct.append("cod", values.cod);
+      newProduct.append("productVariation", JSON.stringify(variation));
+      newProduct.append("brandArr", JSON.stringify(values.brandArr));
+      newProduct.append("categoryArr", JSON.stringify(values.categoryArr));
+      newProduct.append("colorsArr", JSON.stringify(values.colorArr));
+      newProduct.append("attributeArr", JSON.stringify(values.attributeArr));
       if (isEditMode !== true) {
         values.images.forEach((file) => {
           newProduct.append("images", file);
-        });
-        values.colorId.forEach((file) => {
-          newProduct.append("colorId", file);
-        });
-        values.attributeId.forEach((file) => {
-          newProduct.append("attributes", file);
         });
         await dispatch(onAddNewProduct(newProduct));
         await dispatch(onGetProducts());
@@ -365,6 +398,8 @@ const EcommerceAddProduct = (props) => {
       }
     },
   });
+  console.log("validation: ", validation);
+
   // Sử dụng state để quản lý dữ liệu CKEditor
   const [editorDesData, setEditorDesData] = useState(
     validation.values.description
@@ -380,7 +415,6 @@ const EcommerceAddProduct = (props) => {
     validation.values.specification,
     validation.values.colorId,
   ]);
-  console.log("validation.values.colorId: ", validation.values.colorId);
 
   const handleAttributeDataChange = (e, value) => {
     setAttributeData((prev) => {
@@ -416,15 +450,26 @@ const EcommerceAddProduct = (props) => {
     return combinations;
   };
 
-  // Function to render table rows
   let resultColor = {
     label: "color",
     value: "color",
-    data: validation.values.colorId,
+    data: validation.values.colorArr,
   };
+
+  const handleInputChange = (rowIndex, colIndex, value, name) => {
+    const updatedCombinations = [...variation];
+    updatedCombinations[rowIndex][colIndex][name] = value;
+    setVariation(updatedCombinations);
+  };
+
+  useEffect(() => {
+    let r = generateCombinations([...attributeData, resultColor]);
+    setVariation(r);
+  }, [attributeData]);
   const renderRows = () => {
-    const combinations = generateCombinations([...attributeData, resultColor]);
-    return combinations?.map((combination, rowIndex) => (
+    const res = generateCombinations([...attributeData, resultColor]);
+
+    return res?.map((combination, rowIndex) => (
       <tr key={`row-${rowIndex}`}>
         {combination.map((variation, colIndex) => (
           <React.Fragment key={`col-${colIndex}`}>
@@ -432,13 +477,59 @@ const EcommerceAddProduct = (props) => {
             {colIndex === combination.length - 1 && (
               <>
                 <td>
-                  <Input type="text" placeholder="SKU" />
+                  <Input
+                    onChange={(e) =>
+                      handleInputChange(
+                        rowIndex,
+                        colIndex,
+                        e.target.value,
+                        variation.label
+                      )
+                    }
+                    type="text"
+                    placeholder="SKU"
+                  />
                 </td>
                 <td>
-                  <Input type="number" placeholder="Qty" />
+                  <Input
+                    onChange={(e) =>
+                      handleInputChange(
+                        rowIndex,
+                        colIndex,
+                        e.target.value,
+                        variation.label
+                      )
+                    }
+                    type="text"
+                    placeholder="Price"
+                  />
                 </td>
                 <td>
-                  <Input type="file" />
+                  <Input
+                    onChange={(e) =>
+                      handleInputChange(
+                        rowIndex,
+                        colIndex,
+                        e.target.value,
+                        variation.label
+                      )
+                    }
+                    type="number"
+                    placeholder="Qty"
+                  />
+                </td>
+                <td>
+                  <Input
+                    onChange={(e) =>
+                      handleInputChange(
+                        rowIndex,
+                        colIndex,
+                        e.target.value,
+                        variation.label
+                      )
+                    }
+                    type="text"
+                  />
                 </td>
               </>
             )}
@@ -530,12 +621,71 @@ const EcommerceAddProduct = (props) => {
                   toggleCustom={toggleCustom}
                   validation={validation}
                 />
+                <Card>
+                  <CardHeader>
+                    <h5 className="card-title mb-0">Shipping</h5>{" "}
+                  </CardHeader>
+                  <CardBody>
+                    <Row>
+                      <Col sm={6}>
+                        <div className="mb-3">
+                          <label className="form-label">
+                            Estimate Shipping
+                          </label>
+                          <InputGroup>
+                            <Input
+                              type="text"
+                              placeholder="Enter Shipping days..."
+                              value={validation.values.shippingdays || ""}
+                              onChange={validation.handleChange}
+                              invalid={
+                                validation.errors.shippingdays &&
+                                validation.touched.shippingdays
+                              }
+                              name="shippingdays"
+                            />
+                            <InputGroupText>Days</InputGroupText>
+                          </InputGroup>
+                          {validation.errors.shippingdays &&
+                            validation.touched.shippingdays && (
+                              <div className="invalid-feedback">
+                                {validation.errors.shippingdays}
+                              </div>
+                            )}
+                        </div>
+                      </Col>
+                      <Col sm={6}>
+                        <div className="mb-3">
+                          <label className="form-label">Cash on Delivery</label>
+                          <Select
+                            value={{
+                              label: validation.values.cod || "",
+                              value: validation.values.cod || "",
+                            }}
+                            onChange={(selectedOption) =>
+                              validation.handleChange("cod")(
+                                selectedOption.value
+                              )
+                            }
+                            name="cod"
+                            options={[
+                              { label: "true", value: "true" },
+                              { label: "false", value: "false" },
+                            ]}
+                            isInvalid={
+                              validation.errors.cod && validation.touched.cod
+                            }
+                          />
+                        </div>
+                      </Col>
+                    </Row>
+                  </CardBody>
+                </Card>
+
                 {/* other components */}
                 <Card>
                   <CardHeader>
-                    <h5 className="card-title mb-0">
-                      Product Variation + Price
-                    </h5>{" "}
+                    <h5 className="card-title mb-0">Product Variation</h5>{" "}
                   </CardHeader>
                   <CardBody>
                     <Table bordered>
@@ -547,6 +697,7 @@ const EcommerceAddProduct = (props) => {
                             </th>
                           ))}
                           <th>SKU</th>
+                          <th>Price</th>
                           <th>Qty</th>
                           <th>Image Upload</th>
                         </tr>
@@ -603,43 +754,42 @@ const EcommerceAddProduct = (props) => {
                 </CardBody>
               </Card>
               <EcommerceCategory
-                categoryId={validation.values.categoryId}
-                errors={validation.errors.categoryId}
-                blur={validation.touched.categoryId}
+                categoryId={validation.values.categoryArr}
+                errors={validation.errors.categoryArr}
+                blur={validation.touched.categoryArr}
                 handleCategoryBlur={handleCategoryBlur}
                 handleCategoryChange={handleCategoryChange}
               />
 
               <EcommerceBrand
-                brandId={validation.values.brandId}
-                errors={validation.errors.brandId}
-                blur={validation.touched.brandId}
+                brandId={validation.values.brandArr}
+                errors={validation.errors.brandArr}
+                blur={validation.touched.brandArr}
                 handleBrandBlur={handleBrandBlur}
                 handleBrandChange={handleBrandChange}
               />
 
               <EcommerceColor
-                ColorId={validation.values.colorId}
-                errors={validation.errors.colorId}
-                blur={validation.touched.colorId}
+                ColorId={validation.values.colorArr}
+                errors={validation.errors.colorArr}
+                blur={validation.touched.colorArr}
                 handleColorBlur={handleColorBlur}
                 handleColorChange={handleColorChange}
               />
 
               <EcommerceAttributes
-                AttributeId={validation.values.attributeId}
-                errors={validation.errors.attributeId}
-                blur={validation.touched.attributeId}
+                AttributeId={validation.values.attributeArr}
+                errors={validation.errors.attributeArr}
+                blur={validation.touched.attributeArr}
                 handleAttributeBlur={handleattributeBlur}
                 handleAttributeChange={handleattributeChange}
               />
 
-              {validation?.values?.attributeId?.length > 0 && (
+              {validation?.values?.attributeArr?.length > 0 && (
                 <Card>
                   <CardHeader>
                     <h5 className="card-title mb-0">
-                      Choose the attributes of this product and then input
-                      values of each attribute
+                      Choose the attributes of each products
                     </h5>
                   </CardHeader>
                   <CardBody>
@@ -651,8 +801,8 @@ const EcommerceAddProduct = (props) => {
                         flexWrap: "wrap",
                       }}
                     >
-                      {validation?.values?.attributeId?.length > 0 &&
-                        validation?.values?.attributeId.map((val, i) => {
+                      {validation?.values?.attributeArr?.length > 0 &&
+                        validation?.values?.attributeArr.map((val, i) => {
                           return (
                             <Select
                               key={i}

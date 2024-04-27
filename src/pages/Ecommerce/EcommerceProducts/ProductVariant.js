@@ -22,6 +22,12 @@ import {
   UncontrolledTooltip,
   Alert,
   Table,
+  InputGroup,
+  ButtonGroup,
+  DropdownMenu,
+  DropdownItem,
+  ButtonDropdown,
+  DropdownToggle,
 } from "reactstrap";
 import classnames from "classnames";
 import { Link } from "react-router-dom";
@@ -193,10 +199,57 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                     }
                     name="discount"
                   />
+
                   {validation.errors.discount &&
                     validation.touched.discount && (
                       <div className="invalid-feedback">
                         {validation.errors.discount}
+                      </div>
+                    )}
+                </div>
+              </Col>
+            </Row>
+          )}
+
+          {!showVariationForm && (
+            <Row>
+              <Col sm={6}>
+                <div className="mb-3">
+                  <label className="form-label">Weight</label>
+                  <Input
+                    type="Weight"
+                    placeholder="Enter Weight"
+                    onChange={validation.handleChange}
+                    value={validation.values.weight || ""}
+                    invalid={
+                      validation.errors.weight && validation.touched.weight
+                    }
+                    name="weight"
+                  />
+                  {validation.errors.weight && validation.touched.weight && (
+                    <div className="invalid-feedback">
+                      {validation.errors.weight}
+                    </div>
+                  )}
+                </div>
+              </Col>
+              <Col sm={6}>
+                <div className="mb-3">
+                  <label className="form-label">Discount End Date</label>
+                  <Input
+                    type="date"
+                    placeholder="Enter the Discount End Date"
+                    onChange={validation.handleChange}
+                    invalid={
+                      validation.errors.discountenddate &&
+                      validation.touched.discountenddate
+                    }
+                    name="discountenddate"
+                  />
+                  {validation.errors.discountenddate &&
+                    validation.touched.discountenddate && (
+                      <div className="invalid-feedback">
+                        {validation.errors.discountenddate}
                       </div>
                     )}
                 </div>
@@ -246,6 +299,68 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                         {validation.errors.newPrice}
                       </div>
                     )}
+                </div>
+              </Col>
+            </Row>
+          )}
+          <Row>
+            <Col sm={6}>
+              <div className="mb-3">
+                <label className="form-label">CGST</label>
+                <Input
+                  type="text"
+                  placeholder="Enter the cgst"
+                  value={validation.values.cgst || ""}
+                  onChange={validation.handleChange}
+                  invalid={validation.errors.cgst && validation.touched.cgst}
+                  name="cgst"
+                />
+                {validation.errors.cgst && validation.touched.cgst && (
+                  <div className="invalid-feedback">
+                    {validation.errors.cgst}
+                  </div>
+                )}
+              </div>
+            </Col>
+            <Col sm={6}>
+              <div className="mb-3">
+                <label className="form-label">SGST</label>
+                <Input
+                  type="text"
+                  placeholder="Enter the sgst"
+                  value={validation.values.sgst || ""}
+                  onChange={validation.handleChange}
+                  invalid={validation.errors.sgst && validation.touched.sgst}
+                  name="sgst"
+                />
+                {validation.errors.sgst && validation.touched.sgst && (
+                  <div className="invalid-feedback">
+                    {validation.errors.sgst}
+                  </div>
+                )}
+              </div>
+            </Col>
+          </Row>
+          {!showVariationForm && (
+            <Row>
+              <Col sm={6}>
+                <div className="mb-3">
+                  <label className="form-label">Video Link</label>
+                  <Input
+                    type="text"
+                    placeholder="Enter Link..."
+                    value={validation.values.video || ""}
+                    onChange={validation.handleChange}
+                    invalid={
+                      validation.errors.video && validation.touched.video
+                    }
+                    name="video"
+                  />
+                  {validation.errors.video && validation.touched.video && (
+                    <div className="invalid-feedback">
+                      {validation.errors.video}
+                    </div>
+                  )}
                 </div>
               </Col>
             </Row>

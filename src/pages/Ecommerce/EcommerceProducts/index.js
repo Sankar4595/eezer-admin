@@ -308,14 +308,22 @@ const EcommerceProducts = (props) => {
                   <p className="text-muted mb-0">
                     Category:{" "}
                     <span className="fw-medium">
-                      {product.row.original.category
-                        ? product.row.original.category.name
+                      {product.row.original.categoryArr
+                        ? JSON.parse(product.row.original.categoryArr).map(
+                            (val) => {
+                              return val.label;
+                            }
+                          )
                         : "No categories"}
                     </span>{" "}
                     | Trademark:{" "}
                     <span className="fw-medium">
-                      {product.row.original.brand
-                        ? product.row.original.brand.name
+                      {product.row.original.brandArr
+                        ? JSON.parse(product.row.original.brandArr).map(
+                            (val) => {
+                              return val.label;
+                            }
+                          )
                         : "Unbranded"}
                     </span>
                   </p>
@@ -342,14 +350,11 @@ const EcommerceProducts = (props) => {
         Header: "Discount",
         accessor: "discount",
         filterable: true,
-        // Sử dụng cellProps để tùy chỉnh giá trị trong ô cụ thể
         Cell: (cellProps) => {
-          // Kiểm tra nếu giá trị discount hợp lệ
           if (cellProps.value !== null && cellProps.value !== undefined) {
-            // Thêm dấu '%' vào giá trị và hiển thị
             return `${cellProps.value}%`;
           } else {
-            return "N/A"; // Hoặc giá trị mặc định nếu discount không tồn tại
+            return "N/A";
           }
         },
       },

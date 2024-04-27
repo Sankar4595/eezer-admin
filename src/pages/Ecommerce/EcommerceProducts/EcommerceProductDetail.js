@@ -237,7 +237,11 @@ function EcommerceProductDetail(props) {
                           <div className="hstack gap-3 flex-wrap">
                             <div>
                               <Link to="#" className="text-primary d-block">
-                                {productDetails.brand.name}
+                                {JSON.parse(productDetails.brandArr).map(
+                                  (val) => {
+                                    return val.label;
+                                  }
+                                )}
                               </Link>
                             </div>
                             {/* <div className="vr"></div>
@@ -603,11 +607,23 @@ function EcommerceProductDetail(props) {
                                     <th scope="row" style={{ width: "200px" }}>
                                       Category
                                     </th>
-                                    <td>{productDetails.category.name}</td>
+                                    <td>
+                                      {JSON.parse(
+                                        productDetails.categoryArr
+                                      ).map((val) => {
+                                        return val.label;
+                                      })}
+                                    </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">Brand</th>
-                                    <td>{productDetails.brand.name}</td>
+                                    <td>
+                                      {JSON.parse(productDetails.brandArr).map(
+                                        (val) => {
+                                          return val.label;
+                                        }
+                                      )}
+                                    </td>
                                   </tr>
                                   {/*<tr>
                                     <th scope="row">Color</th>
