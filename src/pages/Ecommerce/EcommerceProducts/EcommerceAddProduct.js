@@ -28,7 +28,7 @@ import {
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import Dropzone from "react-dropzone";
+import Dropzone, { useDropzone } from "react-dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 //formik
@@ -65,6 +65,7 @@ const EcommerceAddProduct = (props) => {
       setcustomActiveTab(tab);
     }
   };
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [variation, setVariation] = useState([]);
   const dispatch = useDispatch();
   const selectDashboardData = createSelector(
@@ -87,7 +88,6 @@ const EcommerceAddProduct = (props) => {
       const foundProduct = products.find(
         (product) => product._id === productId._id
       );
-      console.log("foundProduct: ", foundProduct);
       // Cập nhật giá trị của selectedProduct khi tìm thấy sản phẩm
       if (foundProduct) {
         await setSelectedProduct(foundProduct);
@@ -103,15 +103,24 @@ const EcommerceAddProduct = (props) => {
           (option) => option.value === foundProduct.isPublish
         );
         validation.setFieldValue("isPublish", isPublishOption);
-        validation.setFieldValue("brandArr", JSON.parse(foundProduct.brandArr));
+        validation.setFieldValue(
+          "brandArr",
+          foundProduct.brandArr.length > 0
+            ? JSON.parse(foundProduct.brandArr)
+            : foundProduct.brandArr
+        );
         validation.setFieldValue(
           "colorArr",
-          JSON.parse(foundProduct?.colorArr)
+          foundProduct.colorArr.length > 0
+            ? JSON.parse(foundProduct?.colorArr)
+            : foundProduct.colorArr
         );
 
         validation.setFieldValue(
           "categoryArr",
-          JSON.parse(foundProduct.categoryArr)
+          foundProduct.categoryArr.length > 0
+            ? JSON.parse(foundProduct.categoryArr)
+            : foundProduct.categoryArr
         );
 
         validation.setFieldValue("video", foundProduct.video);
@@ -124,14 +133,22 @@ const EcommerceAddProduct = (props) => {
         validation.setFieldValue("sgst", foundProduct.sgst);
         validation.setFieldValue("shippingdays", foundProduct.shippingdays);
         validation.setFieldValue("cod", foundProduct.cod);
-        validation.setFieldValue(
-          "productVariation",
-          JSON.parse(foundProduct.productVariation)
-        );
-        setVariation(foundProduct.productVariation);
+        // validation.setFieldValue(
+        //   "productVariation",
+        //   foundProduct.productVariation.length > 0
+        //     ? JSON.parse(foundProduct.productVariation)
+        //     : foundProduct.productVariation
+        // );
+        setVariation(JSON.parse(foundProduct.productVariation));
+        setAttributeData(JSON.parse(foundProduct?.attributeArr));
         await setselectedFiles(foundProduct.images);
         validation.setFieldValue("images", selectedFiles);
-        validation.setFieldValue("attributeArr", foundProduct?.attributeArr);
+        validation.setFieldValue(
+          "attributeArr",
+          foundProduct?.attributeArr.length > 0
+            ? JSON.parse(foundProduct?.attributeArr)
+            : foundProduct?.attributeArr
+        );
       }
     };
 
@@ -376,8 +393,8 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("productVariation", JSON.stringify(variation));
       newProduct.append("brandArr", JSON.stringify(values.brandArr));
       newProduct.append("categoryArr", JSON.stringify(values.categoryArr));
-      newProduct.append("colorsArr", JSON.stringify(values.colorArr));
-      newProduct.append("attributeArr", JSON.stringify(values.attributeArr));
+      newProduct.append("colorArr", JSON.stringify(values.colorArr));
+      newProduct.append("attributeArr", JSON.stringify(attributeData));
       if (isEditMode !== true) {
         values.images.forEach((file) => {
           newProduct.append("images", file);
@@ -398,7 +415,6 @@ const EcommerceAddProduct = (props) => {
       }
     },
   });
-  console.log("validation: ", validation);
 
   // Sử dụng state để quản lý dữ liệu CKEditor
   const [editorDesData, setEditorDesData] = useState(
@@ -428,7 +444,6 @@ const EcommerceAddProduct = (props) => {
       }
     });
   };
-
   const generateCombinations = (
     data,
     currentCombination = [],
@@ -436,7 +451,7 @@ const EcommerceAddProduct = (props) => {
     combinations = []
   ) => {
     if (index === data?.length) {
-      combinations?.push([...currentCombination]);
+      combinations.push([...currentCombination]);
       return;
     }
 
@@ -450,26 +465,35 @@ const EcommerceAddProduct = (props) => {
     return combinations;
   };
 
+  const handleInputChange = (rowIndex, colIndex, value, name) => {
+    const updatedVariations = JSON.parse(JSON.stringify(variation));
+    updatedVariations[rowIndex][colIndex][name] = value;
+    setVariation(updatedVariations);
+  };
+
   let resultColor = {
     label: "color",
     value: "color",
     data: validation.values.colorArr,
   };
-
-  const handleInputChange = (rowIndex, colIndex, value, name) => {
-    const updatedCombinations = [...variation];
-    updatedCombinations[rowIndex][colIndex][name] = value;
-    setVariation(updatedCombinations);
-  };
-
+  console.log("productId: ", productId);
   useEffect(() => {
-    let r = generateCombinations([...attributeData, resultColor]);
-    setVariation(r);
-  }, [attributeData]);
-  const renderRows = () => {
-    const res = generateCombinations([...attributeData, resultColor]);
+    if (
+      attributeData.length > 0 &&
+      validation.values.colorArr.length > 0 &&
+      productId.length === 0
+    ) {
+      const generatedVariations = generateCombinations([
+        ...attributeData,
+        resultColor,
+      ]);
+      setVariation(generatedVariations);
+    }
+  }, [attributeData, validation.values.colorArr]);
 
-    return res?.map((combination, rowIndex) => (
+  console.log("variation: ", variation);
+  const renderRows = () => {
+    return variation?.map((combination, rowIndex) => (
       <tr key={`row-${rowIndex}`}>
         {combination.map((variation, colIndex) => (
           <React.Fragment key={`col-${colIndex}`}>
@@ -478,12 +502,13 @@ const EcommerceAddProduct = (props) => {
               <>
                 <td>
                   <Input
+                    value={variation?.SKU || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
                         colIndex,
                         e.target.value,
-                        variation.label
+                        "SKU"
                       )
                     }
                     type="text"
@@ -492,12 +517,13 @@ const EcommerceAddProduct = (props) => {
                 </td>
                 <td>
                   <Input
+                    value={variation?.Price || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
                         colIndex,
                         e.target.value,
-                        variation.label
+                        "Price"
                       )
                     }
                     type="text"
@@ -506,31 +532,42 @@ const EcommerceAddProduct = (props) => {
                 </td>
                 <td>
                   <Input
+                    value={variation?.QTY || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
                         colIndex,
                         e.target.value,
-                        variation.label
+                        "QTY"
                       )
                     }
                     type="number"
                     placeholder="Qty"
                   />
                 </td>
-                <td>
-                  <Input
-                    onChange={(e) =>
-                      handleInputChange(
-                        rowIndex,
-                        colIndex,
-                        e.target.value,
-                        variation.label
-                      )
-                    }
-                    type="text"
-                  />
-                </td>
+                {/* <td>
+                  <div>
+                    <Input
+                      // value={variation?.Image || ""}
+                      type="file"
+                      onChange={(e) =>
+                        handleInputChange(
+                          rowIndex,
+                          colIndex,
+                          e.target.files,
+                          "Image"
+                        )
+                      }
+                    />
+                    {variation?.Image ? (
+                      <p>{variation.Image[0].name}</p>
+                    ) : (
+                      <p>
+                        Drag 'n' drop some files here, or click to select files
+                      </p>
+                    )}
+                  </div>
+                </td> */}
               </>
             )}
           </React.Fragment>
@@ -538,7 +575,6 @@ const EcommerceAddProduct = (props) => {
       </tr>
     ));
   };
-
   return (
     <div className="page-content">
       <Container fluid>
@@ -658,10 +694,7 @@ const EcommerceAddProduct = (props) => {
                         <div className="mb-3">
                           <label className="form-label">Cash on Delivery</label>
                           <Select
-                            value={{
-                              label: validation.values.cod || "",
-                              value: validation.values.cod || "",
-                            }}
+                            // value={validation.values.cod || ""}
                             onChange={(selectedOption) =>
                               validation.handleChange("cod")(
                                 selectedOption.value
@@ -699,7 +732,7 @@ const EcommerceAddProduct = (props) => {
                           <th>SKU</th>
                           <th>Price</th>
                           <th>Qty</th>
-                          <th>Image Upload</th>
+                          {/* <th>Image Upload</th> */}
                         </tr>
                       </thead>
                       <tbody>{renderRows()}</tbody>
@@ -808,6 +841,11 @@ const EcommerceAddProduct = (props) => {
                               key={i}
                               name={val.label}
                               isMulti
+                              value={
+                                attributeData.length > 0
+                                  ? attributeData[i]?.data
+                                  : ""
+                              }
                               options={val.data}
                               onChange={(e) => {
                                 handleAttributeDataChange(e, val);

@@ -113,7 +113,7 @@ const Login = (props) => {
       <ParticlesAuth>
         <div className="auth-page-content mt-lg-5">
           <Container>
-            <Row>
+            {/* <Row>
               <Col lg={12}>
                 <div className="text-center mt-sm-5 mb-4 text-white-50">
                   <div>
@@ -126,7 +126,7 @@ const Login = (props) => {
                   </p>
                 </div>
               </Col>
-            </Row>
+            </Row> */}
 
             <Row className="justify-content-center">
               <Col md={8} lg={6} xl={5}>
@@ -292,7 +292,7 @@ const Login = (props) => {
                   </CardBody>
                 </Card>
 
-                <div className="mt-4 text-center">
+                {/* <div className="mt-4 text-center">
                   <p className="mb-0">
                     Don't have an account ?{" "}
                     <Link
@@ -303,7 +303,7 @@ const Login = (props) => {
                       Signup{" "}
                     </Link>{" "}
                   </p>
-                </div>
+                </div> */}
               </Col>
             </Row>
           </Container>

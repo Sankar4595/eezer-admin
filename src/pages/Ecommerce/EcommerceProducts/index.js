@@ -415,14 +415,13 @@ const EcommerceProducts = (props) => {
                   See
                 </DropdownItem>
 
-                <DropdownItem>
-                  <Link
-                    to={`/apps-ecommerce-add-product/${cellProps.row.original._id}`}
-                    className="text-body"
-                  >
-                    <i className="ri-pencil-fill align-bottom me-2 text-muted"></i>{" "}
-                    Edit
-                  </Link>
+                <DropdownItem
+                  tag={Link}
+                  to={`/apps-ecommerce-add-product/${cellProps.row.original._id}`}
+                  className="text-body"
+                >
+                  <i className="ri-pencil-fill align-bottom me-2 text-muted"></i>{" "}
+                  Edit
                 </DropdownItem>
 
                 <DropdownItem divider />
