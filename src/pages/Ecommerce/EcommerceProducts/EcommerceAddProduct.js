@@ -479,8 +479,8 @@ const EcommerceAddProduct = (props) => {
   console.log("productId: ", productId);
   useEffect(() => {
     if (
-      attributeData.length > 0 &&
-      validation.values.colorArr.length > 0 &&
+      attributeData.length > 0 ||
+      validation.values.colorArr.length > 0 ||
       productId.length === 0
     ) {
       const generatedVariations = generateCombinations([

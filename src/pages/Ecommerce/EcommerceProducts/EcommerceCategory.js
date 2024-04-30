@@ -199,18 +199,6 @@ const EcommerceCategory = (props) => {
                       </div>
                     </div>
                   </Col>
-                  <Col className="col-sm">
-                    {/*<div className="d-flex justify-content-sm-end">
-                      <div className="search-box ms-2">
-                        <input
-                          type="text"
-                          className="form-control search"
-                          placeholder="Tìm kiếm"
-                        />
-                        <i className="ri-search-line search-icon"></i>
-                      </div>
-                    </div>*/}
-                  </Col>
                 </Row>
 
                 <div className="table-responsive table-card mt-3 mb-1">

@@ -195,8 +195,8 @@ const EcommerceProducts = (props) => {
     const maxCost = value[1];
 
     // Gán giá trị min và max cho các phần tử DOM
-    document.getElementById("minCost").value = minCost;
-    document.getElementById("maxCost").value = maxCost;
+    // document.getElementById("minCost").value = minCost;
+    // document.getElementById("maxCost").value = maxCost;
 
     // Sử dụng giá trị min và max để lọc danh sách sản phẩm
     const filteredProducts = products.filter(
@@ -316,7 +316,7 @@ const EcommerceProducts = (props) => {
                           )
                         : "No categories"}
                     </span>{" "}
-                    | Trademark:{" "}
+                    | Brand:{" "}
                     <span className="fw-medium">
                       {product.row.original.brandArr
                         ? JSON.parse(product.row.original.brandArr).map(
@@ -372,9 +372,12 @@ const EcommerceProducts = (props) => {
         filterable: true,
       },
       {
-        Header: "Announcement date",
+        Header: "discount end date",
         accessor: "publishedDate",
         filterable: true,
+        Cell: (product) => {
+          return <p>{product.row.original.discountenddate}</p>;
+        },
       },
       {
         Header: "Status",
@@ -490,8 +493,8 @@ const EcommerceProducts = (props) => {
         <BreadCrumb title="Product" pageTitle="E-commerce" />
 
         <Row>
-          <Col xl={3} lg={4}>
-            <Card>
+          {/* <Col xl={3} lg={4}> */}
+          {/* <Card>
               <CardHeader>
                 <div className="d-flex mb-3">
                   <div className="flex-grow-1">
@@ -507,18 +510,6 @@ const EcommerceProducts = (props) => {
                     </Link>
                   </div>
                 </div>
-
-                {/* <div className="filter-choices-input">
-                  <Select
-                    value={selectedMulti}
-                    isMulti={true}
-                    onChange={() => {
-                      handleMulti();
-                    }}
-                    options={SingleOptions}
-                    styles={customStyles}
-                  />
-                </div> */}
               </CardHeader>
 
               <div className="accordion accordion-flush">
@@ -623,14 +614,6 @@ const EcommerceProducts = (props) => {
                       aria-labelledby="flush-headingBrands"
                     >
                       <div className="accordion-body text-body pt-0">
-                        {/* <div className="search-box search-box-sm">
-                          <input
-                            type="text"
-                            className="form-control bg-light border-0"
-                            placeholder="Tìm kiếm"
-                          />
-                          <i className="ri-search-line search-icon"></i>
-                        </div> */}
                         <div className="d-flex flex-column gap-2 mt-3">
                           {brands.map((brand) => (
                             <div className="form-check" key={brand.id}>
@@ -662,256 +645,11 @@ const EcommerceProducts = (props) => {
                     </div>
                   </UncontrolledCollapse>
                 </div>
-
-                {/* <div className="accordion-item">
-                  <h2 className="accordion-header">
-                    <button
-                      className="accordion-button bg-transparent shadow-none collapsed"
-                      type="button"
-                      id="flush-headingDiscount"
-                    >
-                      <span className="text-muted text-uppercase fs-12 fw-medium">
-                        Discount
-                      </span>{" "}
-                      <span className="badge bg-success rounded-pill align-middle ms-1">
-                        1
-                      </span>
-                    </button>
-                  </h2>
-                  <UncontrolledCollapse toggler="#flush-headingDiscount">
-                    <div
-                      id="flush-collapseDiscount"
-                      className="accordion-collapse collapse show"
-                    >
-                      <div className="accordion-body text-body pt-1">
-                        <div className="d-flex flex-column gap-2">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productdiscountRadio6"
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productdiscountRadio6"
-                            >
-                              50% or more
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productdiscountRadio5"
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productdiscountRadio5"
-                            >
-                              40% or more
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productdiscountRadio4"
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productdiscountRadio4"
-                            >
-                              30% or more
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productdiscountRadio3"
-                              defaultChecked
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productdiscountRadio3"
-                            >
-                              20% or more
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productdiscountRadio2"
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productdiscountRadio2"
-                            >
-                              10% or more
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productdiscountRadio1"
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productdiscountRadio1"
-                            >
-                              Less than 10%
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </UncontrolledCollapse>
-                </div>
-
-                <div className="accordion-item">
-                  <h2 className="accordion-header">
-                    <button
-                      className="accordion-button bg-transparent shadow-none collapsed"
-                      type="button"
-                      id="flush-headingRating"
-                    >
-                      <span className="text-muted text-uppercase fs-12 fw-medium">
-                        Rating
-                      </span>{" "}
-                      <span className="badge bg-success rounded-pill align-middle ms-1">
-                        1
-                      </span>
-                    </button>
-                  </h2>
-
-                  <UncontrolledCollapse toggler="#flush-headingRating">
-                    <div
-                      id="flush-collapseRating"
-                      className="accordion-collapse collapse show"
-                      aria-labelledby="flush-headingRating"
-                    >
-                      <div className="accordion-body text-body">
-                        <div className="d-flex flex-column gap-2">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productratingRadio4"
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  onChangeRating(4);
-                                } else {
-                                  onUncheckMark(4);
-                                }
-                              }}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productratingRadio4"
-                            >
-                              <span className="text-muted">
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star"></i>
-                              </span>{" "}
-                              4 & Above
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productratingRadio3"
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  onChangeRating(3);
-                                } else {
-                                  onUncheckMark(3);
-                                }
-                              }}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productratingRadio3"
-                            >
-                              <span className="text-muted">
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star"></i>
-                                <i className="mdi mdi-star"></i>
-                              </span>{" "}
-                              3 & Above
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productratingRadio2"
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productratingRadio2"
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  onChangeRating(2);
-                                } else {
-                                  onUncheckMark(2);
-                                }
-                              }}
-                            >
-                              <span className="text-muted">
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star"></i>
-                                <i className="mdi mdi-star"></i>
-                                <i className="mdi mdi-star"></i>
-                              </span>{" "}
-                              2 & Above
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="productratingRadio1"
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  onChangeRating(1);
-                                } else {
-                                  onUncheckMark(1);
-                                }
-                              }}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="productratingRadio1"
-                            >
-                              <span className="text-muted">
-                                <i className="mdi mdi-star text-warning"></i>
-                                <i className="mdi mdi-star"></i>
-                                <i className="mdi mdi-star"></i>
-                                <i className="mdi mdi-star"></i>
-                                <i className="mdi mdi-star"></i>
-                              </span>{" "}
-                              1
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </UncontrolledCollapse>
-                </div> */}
               </div>
-            </Card>
-          </Col>
+            </Card> */}
+          {/* </Col> */}
 
-          <div className="col-xl-9 col-lg-8">
+          <div style={{ width: "100%" }} className="col-xl-9 col-lg-8">
             <div>
               <div className="card">
                 <div className="card-header border-0">
@@ -1012,7 +750,7 @@ const EcommerceProducts = (props) => {
                       data={productList || []}
                       isGlobalFilter={true}
                       isAddUserList={false}
-                      customPageSize={10}
+                      customPageSize={5}
                       divClass="table-responsive mb-1"
                       tableClass="mb-0 align-middle table-borderless"
                       theadClass="table-light text-muted"

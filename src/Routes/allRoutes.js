@@ -15,11 +15,19 @@ import Logout from "../pages/Authentication/Logout";
 import Login from "../pages/Authentication/Login";
 import Register from "../pages/Authentication/Register";
 import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
+import BrandComponent from "../pages/common/Brand";
+import AttributeComponent from "../pages/common/Attribute";
+import CategoriesComponent from "../pages/common/Category";
+import ColorComponent from "../pages/common/Color";
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardEcommerce /> },
   { path: "/index", component: <DashboardEcommerce /> },
   { path: "/apps-ecommerce-products", component: <EcommerceProducts /> },
+  { path: "/brand", component: <BrandComponent /> },
+  { path: "/attribute", component: <AttributeComponent /> },
+  { path: "/category", component: <CategoriesComponent /> },
+  { path: "/color", component: <ColorComponent /> },
   {
     path: "/apps-ecommerce-product-details/:_id",
     component: <EcommerceProductDetail />,
