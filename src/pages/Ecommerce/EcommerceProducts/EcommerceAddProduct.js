@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import { format } from "date-fns";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import {
   Card,
@@ -66,8 +65,9 @@ const EcommerceAddProduct = (props) => {
       setcustomActiveTab(tab);
     }
   };
-  const [sizeAndVar, setSizeAndVar] = useState([]);
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [variation, setVariation] = useState([]);
+  const [sizeAndVar, setSizeAndVar] = useState([]);
   const dispatch = useDispatch();
   const selectDashboardData = createSelector(
     (state) => state.Ecommerce.products,
@@ -79,67 +79,72 @@ const EcommerceAddProduct = (props) => {
       dispatch(onGetProducts());
     }
   }, [dispatch, products]);
+  const editorDesRef = useRef(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const editorSpecRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const foundProduct = products.find(
         (product) => product._id === productId._id
       );
-      // if (foundProduct) {
-      //   await setSelectedProduct(foundProduct);
-      //   setIsEditMode(true);
-      //   validation.setFieldValue("name", foundProduct.name);
-      //   validation.setFieldValue("description", foundProduct.description);
-      //   validation.setFieldValue("specification", foundProduct.specification);
-      //   validation.setFieldValue("price", foundProduct.price);
-      //   validation.setFieldValue("quantity", foundProduct.quantity);
-      //   validation.setFieldValue("discount", foundProduct.discount);
-      //   const isPublishOption = IsPublishOptions[0].options.find(
-      //     (option) => option.value === foundProduct.isPublish
-      //   );
-      //   validation.setFieldValue("isPublish", isPublishOption);
-      //   validation.setFieldValue(
-      //     "brand",
-      //     foundProduct.brandArr.length > 0
-      //       ? JSON.parse(foundProduct.brandArr)
-      //       : foundProduct.brandArr
-      //   );
-      //   validation.setFieldValue(
-      //     "color",
-      //     foundProduct.colorArr.length > 0
-      //       ? JSON.parse(foundProduct?.colorArr)
-      //       : foundProduct.colorArr
-      //   );
+      if (foundProduct) {
+        await setSelectedProduct(foundProduct);
+        setIsEditMode(true);
+        validation.setFieldValue("name", foundProduct.name);
+        validation.setFieldValue("description", foundProduct.description);
+        validation.setFieldValue("specification", foundProduct.specification);
+        validation.setFieldValue("originPrice", foundProduct.originPrice);
+        validation.setFieldValue("quantity", foundProduct.quantity);
+        validation.setFieldValue("discount", foundProduct.discount);
+        const isPublishOption = IsPublishOptions[0].options.find(
+          (option) => option.value === foundProduct.isPublish
+        );
+        validation.setFieldValue("isPublish", isPublishOption);
+        validation.setFieldValue(
+          "brand",
+          foundProduct.brand.length > 0
+            ? JSON.parse(foundProduct.brand)
+            : foundProduct.brand
+        );
+        validation.setFieldValue(
+          "color",
+          foundProduct.color.length > 0
+            ? JSON.parse(foundProduct?.color)
+            : foundProduct.color
+        );
 
-      //   validation.setFieldValue(
-      //     "category",
-      //     foundProduct.categoryArr.length > 0
-      //       ? JSON.parse(foundProduct.category)
-      //       : foundProduct.category
-      //   );
+        validation.setFieldValue(
+          "category",
+          foundProduct.category.length > 0
+            ? JSON.parse(foundProduct.category)
+            : foundProduct.category
+        );
 
-      //   validation.setFieldValue("video", foundProduct.video);
-      //   validation.setFieldValue("weight", foundProduct.weight);
-      //   validation.setFieldValue(
-      //     "discountenddate",
-      //     foundProduct.discountenddate
-      //   );
-      //   validation.setFieldValue("cgst", foundProduct.cgst);
-      //   validation.setFieldValue("sgst", foundProduct.sgst);
-      //   validation.setFieldValue("shippingdays", foundProduct.shippingdays);
-      //   validation.setFieldValue("cod", foundProduct.cod);
-      //   setVariation(JSON.parse(foundProduct.productVariation));
-      //   setAttributeData(JSON.parse(foundProduct?.attribute));
-      //   await setselectedFiles(foundProduct.images);
-      //   validation.setFieldValue("images", selectedFiles);
-      //   validation.setFieldValue(
-      //     "attribute",
-      //     foundProduct?.attribute.length > 0
-      //       ? JSON.parse(foundProduct?.attribute)
-      //       : foundProduct?.attribute
-      //   );
-      // }
+        validation.setFieldValue("video", foundProduct.video);
+        validation.setFieldValue("weight", foundProduct.weight);
+        validation.setFieldValue(
+          "discountenddate",
+          foundProduct.discountenddate
+        );
+        validation.setFieldValue("cgst", foundProduct.cgst);
+        validation.setFieldValue("sgst", foundProduct.sgst);
+        validation.setFieldValue("shippingdays", foundProduct.shippingdays);
+        validation.setFieldValue("cod", foundProduct.cod);
+        setVariation(JSON.parse(foundProduct.productVariation));
+        setAttributeData(JSON.parse(foundProduct?.attribute));
+        await setselectedFiles(foundProduct.images);
+        validation.setFieldValue("images", selectedFiles);
+        validation.setFieldValue(
+          "attribute",
+          foundProduct?.attribute.length > 0
+            ? JSON.parse(foundProduct?.attribute)
+            : foundProduct?.attribute
+        );
+      }
     };
+
+    // Gọi async hàm
     fetchData();
   }, [productId, products, isEditMode]);
 
@@ -167,8 +172,10 @@ const EcommerceAddProduct = (props) => {
     });
 
     if (fromClipboard) {
+      // Nếu từ clipboard, chỉ thêm file đầu tiên trong mảng processedFiles
       setselectedFiles((prevFiles) => [...prevFiles, processedFiles[0]]);
     } else {
+      // Logic cho việc thêm file thủ công
       if (selectedFiles.length === 0) {
         setselectedFiles(processedFiles);
       } else if (selectedFiles.length === 1) {
@@ -181,9 +188,13 @@ const EcommerceAddProduct = (props) => {
   }
 
   function handleRemoveImage(index) {
+    // Tạo một bản sao của danh sách ảnh đã chọn
     const updatedFiles = [...selectedFiles];
+    // Loại bỏ ảnh tại chỉ mục index
     updatedFiles.splice(index, 1);
+    // Cập nhật danh sách ảnh
     setselectedFiles(updatedFiles);
+    // Cập nhật trường images trong Formik với danh sách ảnh mới
     validation.setFieldValue("images", updatedFiles);
   }
   function generateRandomString(length) {
@@ -204,16 +215,17 @@ const EcommerceAddProduct = (props) => {
       const clipboardData = event.clipboardData || window.clipboardData;
       const items = clipboardData.items || [];
 
+      // Lặp từ cuối lên đầu
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         if (item.type.indexOf("image") !== -1) {
           const blob = item.getAsFile();
-          const randomFileName = generateRandomString(10);
+          const randomFileName = generateRandomString(10); // Độ dài tên file mong muốn
           const file = new File([blob], `${randomFileName}.png`, {
             type: blob.type,
           });
           handleAcceptedFiles([file, ...selectedFiles], true);
-          break;
+          break; // Dừng sau khi xử lý ảnh đầu tiên (gần nhất)
         }
       }
     };
@@ -222,12 +234,9 @@ const EcommerceAddProduct = (props) => {
       document.removeEventListener("paste", handlePaste);
     };
   }, [selectedFiles]);
-
   useEffect(() => {
     validation.setFieldValue("images", selectedFiles);
-    validation.setFieldValue("productVariation", variation);
-    validation.setFieldValue("variation", sizeAndVar);
-  }, [selectedFiles, sizeAndVar, variation]);
+  }, [selectedFiles]);
 
   function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return "0 Bytes";
@@ -253,14 +262,14 @@ const EcommerceAddProduct = (props) => {
   const handleCategoryBlur = () => {
     validation.handleBlur;
   };
-  const handleSubCategoryChange = (sub) => {
-    validation.setFieldValue("type", sub);
+  const handleSubCategoryChange = (type) => {
+    validation.setFieldValue("type", type);
   };
   const handleSubCategoryBlur = () => {
     validation.handleBlur;
   };
   const handleBrandChange = (brandId) => {
-    validation.setFieldValue("brand", brandId.l);
+    validation.setFieldValue("brand", brandId);
   };
   const handleColorChange = (colorId) => {
     validation.setFieldValue("color", colorId);
@@ -277,16 +286,15 @@ const EcommerceAddProduct = (props) => {
   const handleattributeBlur = () => {
     validation.handleBlur;
   };
+  //json gửi đi
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      category: [],
-      type: [],
-      gender: "",
       name: "",
-      price: 0,
-      originPrice: 0,
-      quantity: 0,
+      quantity: "",
+      originPrice: "",
+      price: "",
+      category: [],
       brand: [],
       color: [],
       attribute: [],
@@ -299,28 +307,31 @@ const EcommerceAddProduct = (props) => {
       sgst: "",
       shippingdays: "",
       cod: false,
-      variation: [],
       productVariation: [],
       discount: 0,
       isPublish: null,
       images: [],
+      type: [],
+      gender: "male",
     },
     validationSchema: Yup.object({
-      name: Yup.string()
+      name: Yup.string() //check biến isEditMode == true thì không cần test unique
         .required("Please enter product name")
         .max(500, "Please do not enter more than 500 characters")
         .test("is-unique", "Product name already exists", function (value) {
+          // Chuẩn bị tên sản phẩm để kiểm tra
           if (isEditMode === true) {
             return true;
           }
           const trimmedLowerCaseValue = value.trim().toLowerCase();
+          // Kiểm tra xem tên sản phẩm đã tồn tại trong danh sách products hay không
           return !products.some((product) => {
             const productLowerCaseName = product.name.trim().toLowerCase();
             return productLowerCaseName === trimmedLowerCaseValue;
           });
         }),
-      originPrice: Yup.number().required("Please enter product price"),
-      quantity: Yup.number().required("Please enter stock quantity"),
+      originPrice: Yup.number().required("Please enter product originPrice"),
+      quantity: Yup.number().required("Please enter quantity"),
       isPublish: Yup.object()
         .nullable(false)
         .required("Please select display status"),
@@ -342,9 +353,11 @@ const EcommerceAddProduct = (props) => {
         "images-validation",
         "Please add at least 1 photo",
         function (value) {
+          // Nếu isEditMode là true, trả về true và bỏ qua kiểm tra
           if (isEditMode === true) {
             return true;
           }
+          // Kiểm tra số lượng ảnh khi isEditMode là false
           return value && value.length >= 1;
         }
       ),
@@ -355,11 +368,15 @@ const EcommerceAddProduct = (props) => {
       sgst: Yup.number().optional("Please enter sgst"),
       shippingdays: Yup.number().optional("Please enter shippingdays"),
       cod: Yup.boolean().optional("Please enter cash on delivery"),
+      productVariation: Yup.array().optional(
+        "Please enter productVariation details"
+      ),
     }),
     onSubmit: async (values) => {
+      // Xử lý dữ liệu khác
       const newProduct = new FormData();
+      // Thêm dữ liệu sản phẩm
       newProduct.append("name", values.name);
-      newProduct.append("price", values.price);
       newProduct.append("originPrice", values.originPrice);
       newProduct.append("quantity", values.quantity);
       newProduct.append("discount", values.discount);
@@ -373,14 +390,14 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("sgst", values.sgst);
       newProduct.append("shippingdays", values.shippingdays);
       newProduct.append("cod", values.cod);
-      newProduct.append("productVariation", variation);
-      newProduct.append("variation", sizeAndVar);
+      newProduct.append("productVariation", JSON.stringify(variation));
       newProduct.append("brand", JSON.stringify(values.brand));
       newProduct.append("category", JSON.stringify(values.category));
-      newProduct.append("type", JSON.stringify(values.type));
-      newProduct.append("gender", values.gender);
       newProduct.append("color", JSON.stringify(values.color));
       newProduct.append("attribute", JSON.stringify(attributeData));
+      newProduct.append("type", JSON.stringify(values.type));
+      newProduct.append("variation", JSON.stringify(sizeAndVar));
+      newProduct.append("gender", values.gender);
       if (isEditMode !== true) {
         values.images.forEach((file) => {
           newProduct.append("images", file);
@@ -391,6 +408,9 @@ const EcommerceAddProduct = (props) => {
         validation.resetForm();
       } else {
         newProduct.append("id", productId._id);
+        // for (const [key, value] of newProduct.entries()) {
+        //   console.log(`Key: ${key}, Value: ${value}`);
+        // }
         await dispatch(onUpdateProduct(newProduct));
         await dispatch(onGetProducts());
         history("/apps-ecommerce-products");
@@ -399,6 +419,7 @@ const EcommerceAddProduct = (props) => {
     },
   });
 
+  // Sử dụng state để quản lý dữ liệu CKEditor
   const [editorDesData, setEditorDesData] = useState(
     validation.values.description
   );
@@ -408,11 +429,7 @@ const EcommerceAddProduct = (props) => {
   useEffect(() => {
     setEditorDesData(validation.values.description);
     setEditorSpecData(validation.values.specification);
-  }, [
-    validation.values.description,
-    validation.values.specification,
-    validation.values.color,
-  ]);
+  }, [validation.values.description, validation.values.specification]);
 
   const handleAttributeDataChange = (e, value) => {
     setAttributeData((prev) => {
@@ -465,8 +482,8 @@ const EcommerceAddProduct = (props) => {
       variation.push({
         color: color,
         colorCode: colorCode,
-        colorImage: ``,
-        image: ``,
+        colorImage: `/images/product/color/yellow.png`,
+        image: `/images/product/fashion/3-3.png`,
         size: size,
       });
     });
@@ -760,7 +777,7 @@ const EcommerceAddProduct = (props) => {
                     Save edits
                   </button>
                 ) : (
-                  <button type="submit" className="btn btn-primary w-sm" onClick={validation.handleSubmit}>
+                  <button type="submit" className="btn btn-primary w-sm">
                     Add products
                   </button>
                 )}

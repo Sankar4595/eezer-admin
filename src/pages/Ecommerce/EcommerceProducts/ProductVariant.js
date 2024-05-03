@@ -11,11 +11,11 @@ import {
   Row,
 } from "reactstrap";
 import classnames from "classnames";
-import { Input as InputNew, Select as AntSelect } from "antd";
-import Select from "react-select";
+import { Input as InputNew, Select } from "antd";
 
 const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
   const [gst, setGst] = useState("include");
+
   let formattedPrice;
   let discountPrice =
     (validation.values.originPrice * validation.values.discount) / 100;
@@ -51,14 +51,13 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
     }
   }, [validation.values.price]);
 
-  const { Option } = AntSelect;
+  const { Option } = Select;
   const selectAfter = (
-    <AntSelect onChange={(e) => setGst(e)} defaultValue="include">
+    <Select onChange={(e) => setGst(e)} defaultValue="include">
       <Option value="include">include</Option>
       <Option value="exclude">exclude</Option>
-    </AntSelect>
+    </Select>
   );
-
   return (
     <>
       <Card>
@@ -87,7 +86,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 <label className="form-label">Price</label>
                 <Input
                   type="number"
-                  placeholder="Enter price"
+                  placeholder="Enter originPrice"
                   value={validation.values.originPrice || ""}
                   onChange={validation.handleChange}
                   invalid={
@@ -202,11 +201,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                   invalid={validation.errors.price && validation.touched.price}
                   name="price"
                 >
-                  <Input
-                    onChange={validation.handleChange}
-                    disabled
-                    value={formattedPrice}
-                  />
+                  <Input disabled value={formattedPrice} />
                 </div>
                 {validation.errors.price && validation.touched.price && (
                   <div className="invalid-feedback">
@@ -229,6 +224,14 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                   invalid={validation.errors.cgst && validation.touched.cgst}
                   name="cgst"
                 />
+                {/* <Input
+                  type="text"
+                  placeholder="Enter the cgst"
+                  value={validation.values.cgst || ""}
+                  onChange={validation.handleChange}
+                  invalid={validation.errors.cgst && validation.touched.cgst}
+                  name="cgst"
+                /> */}
                 {validation.errors.cgst && validation.touched.cgst && (
                   <div className="invalid-feedback">
                     {validation.errors.cgst}
@@ -248,6 +251,14 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                   invalid={validation.errors.sgst && validation.touched.sgst}
                   name="sgst"
                 />
+                {/* <Input
+                  type="text"
+                  placeholder="Enter the sgst"
+                  value={validation.values.sgst || ""}
+                  onChange={validation.handleChange}
+                  invalid={validation.errors.sgst && validation.touched.sgst}
+                  name="sgst"
+                /> */}
                 {validation.errors.sgst && validation.touched.sgst && (
                   <div className="invalid-feedback">
                     {validation.errors.sgst}
@@ -278,19 +289,24 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
             <Col sm={6}>
               <div className="mb-3">
                 <label className="form-label">Gender</label>
-                <Select
-                  // value={validation.values.cod || ""}
-                  onChange={(selectedOption) =>
-                    validation.handleChange("gender")(selectedOption.value)
+                {/* <Input
+                  type="text"
+                  placeholder="Enter here..."
+                  value={validation.values.gender || ""}
+                  onChange={validation.handleChange}
+                  invalid={
+                    validation.errors.gender && validation.touched.gender
                   }
                   name="gender"
-                  options={[
-                    { label: "male", value: "Male" },
-                    { label: "female", value: "Female" },
-                    { label: "both", value: "Both" },
-                  ]}
-                  isInvalid={validation.errors.cod && validation.touched.cod}
-                />
+                /> */}
+                <Select
+                  style={{ width: "100%", height: "40px", borderRadius: "3px" }}
+                  onChange={(e) => validation.setFieldValue("gender", e)}
+                  value={validation.values.gender}
+                >
+                  <Option value={"male"}>Male</Option>
+                  <Option value={"female"}>Female</Option>
+                </Select>
                 {validation.errors.gender && validation.touched.gender && (
                   <div className="invalid-feedback">
                     {validation.errors.gender}

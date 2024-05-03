@@ -27,6 +27,10 @@ import {
   addNewBrand as addNewBrandApi,
   updateBrand as updateBrandApi,
   deleteBrand as deleteBrandApi,
+  getSubCateogry as getSubCategoryApi,
+  addNewSubCateogry as addNewSubCategoryApi,
+  updateSubCateogry as updateSubCategoryApi,
+  deleteSubCateogry as deleteSubCategoryApi,
   addNewColors as addNewColorsApi,
   updateColors as updateColorsApi,
   deleteColors as deleteColorsApi,
@@ -34,10 +38,6 @@ import {
   addNewAttribute as addNewAttributeApi,
   updateAttribute as updateAttributeApi,
   deleteAttribute as deleteAttributeApi,
-  getSubCategory as getSubCategoryApi,
-  addNewSubCategory as addNewSubCategoryApi,
-  updateSubCategory as updateSubCategoryApi,
-  deleteSubCategory as deleteSubCategoryApi,
 } from "../../helpers/fakebackend_helper";
 
 export const getProducts = createAsyncThunk(
@@ -472,9 +472,9 @@ export const getSubCategory = createAsyncThunk(
 
 export const updateSubCategory = createAsyncThunk(
   "ecommerce/updateSubCategory",
-  async (SubCategory) => {
+  async (brand) => {
     try {
-      const response = updateSubCategoryApi(SubCategory); // Gọi API cập nhật thông tin thương hiệu
+      const response = updateSubCategoryApi(brand); // Gọi API cập nhật thông tin thương hiệu
       const data = await response;
       toast.success("SubCategory Updated Successfully", { autoClose: 3000 });
       return data;
@@ -487,11 +487,11 @@ export const updateSubCategory = createAsyncThunk(
 
 export const deleteSubCategory = createAsyncThunk(
   "ecommerce/deleteSubCategory",
-  async (SubCategory) => {
+  async (brand) => {
     try {
-      const response = await deleteSubCategoryApi(SubCategory); // Gọi API xóa thương hiệu
+      const response = await deleteSubCategoryApi(brand); // Gọi API xóa thương hiệu
       toast.success("SubCategory Deleted Successfully", { autoClose: 3000 });
-      return { SubCategory, ...response };
+      return { brand, ...response };
     } catch (error) {
       toast.error("SubCategory Deleted Failed", { autoClose: 3000 });
       throw error;
@@ -501,9 +501,9 @@ export const deleteSubCategory = createAsyncThunk(
 
 export const addNewSubCategory = createAsyncThunk(
   "ecommerce/addNewSubCategory",
-  async (SubCategory) => {
+  async (brand) => {
     try {
-      const response = addNewSubCategoryApi(SubCategory); // Gọi API thêm thương hiệu mới
+      const response = addNewSubCategoryApi(brand); // Gọi API thêm thương hiệu mới
       const data = await response;
       toast.success("SubCategory Added Successfully", { autoClose: 3000 });
       return data;

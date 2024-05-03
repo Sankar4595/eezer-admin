@@ -49,6 +49,13 @@ export const GET_BRANDS = "apps/brand";
 export const DELETE_BRAND = "/apps/brand";
 export const ADD_NEW_BRAND = "/apps/brand";
 export const UPDATE_BRAND = "/apps/brand";
+
+// SUBCATEGORY
+export const GET_SUBCATEGORY = "apps/subCategory";
+export const DELETE_SUBCATEGORY = "/apps/subCategory";
+export const ADD_NEW_SUBCATEGORY = "/apps/subCategory";
+export const UPDATE_SUBCATEGORY = "/apps/subCategory";
+
 // Color
 export const GET_Color = "apps/Color";
 export const DELETE_Color = "/apps/Color";
@@ -59,11 +66,6 @@ export const GET_Attribute = "apps/Attribute";
 export const DELETE_Attribute = "/apps/Attribute";
 export const ADD_NEW_Attribute = "/apps/Attribute";
 export const UPDATE_Attribute = "/apps/Attribute";
-//SubCategory
-export const GET_SubCategory = "apps/subCategory";
-export const DELETE_SubCategory = "/apps/subCategory";
-export const ADD_NEW_SubCategory = "/apps/subCategory";
-export const UPDATE_SubCategory = "/apps/subCategory";
 // Orders
 export const GET_ORDERS = "/apps/order";
 export const GET_ORDER_BY_ID = "/apps/order";

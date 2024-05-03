@@ -90,6 +90,15 @@ export const deleteBrand = (brand) =>
 export const updateBrand = (brand) =>
   api.patch(url.UPDATE_BRAND + "/" + brand._id, brand);
 
+//SUBCATEGORY
+export const getSubCateogry = () => api.get(url.GET_SUBCATEGORY);
+export const addNewSubCateogry = (sub) =>
+  api.create(url.ADD_NEW_SUBCATEGORY, sub);
+export const deleteSubCateogry = (sub) =>
+  api.delete(url.DELETE_SUBCATEGORY + "/" + sub);
+export const updateSubCateogry = (sub) =>
+  api.patch(url.UPDATE_SUBCATEGORY + "/" + sub._id, sub);
+
 //Colors
 export const getColors = () => api.get(url.GET_Color);
 export const addNewColors = (Colors) => api.create(url.ADD_NEW_Color, Colors);
@@ -106,15 +115,6 @@ export const deleteAttribute = (Attribute) =>
   api.delete(url.DELETE_Attribute + "/" + Attribute);
 export const updateAttribute = (Attribute) =>
   api.patch(url.UPDATE_Attribute + "/" + Attribute._id, Attribute);
-
-//SubCategory
-export const getSubCategory = () => api.get(url.GET_SubCategory);
-export const addNewSubCategory = (SubCategory) =>
-  api.create(url.ADD_NEW_SubCategory, SubCategory);
-export const deleteSubCategory = (SubCategory) =>
-  api.delete(url.DELETE_SubCategory + "/" + SubCategory);
-export const updateSubCategory = (SubCategory) =>
-  api.patch(url.UPDATE_SubCategory + "/" + SubCategory._id, SubCategory);
 
 // get Upcomming Events
 export const getUpCommingEvent = () => api.get(url.GET_UPCOMMINGEVENT);
