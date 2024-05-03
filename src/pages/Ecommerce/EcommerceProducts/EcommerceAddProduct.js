@@ -760,7 +760,7 @@ const EcommerceAddProduct = (props) => {
                     Save edits
                   </button>
                 ) : (
-                  <button type="submit" className="btn btn-primary w-sm">
+                  <button type="submit" className="btn btn-primary w-sm" onClick={validation.handleSubmit}>
                     Add products
                   </button>
                 )}
