@@ -34,6 +34,10 @@ import {
   addNewAttribute as addNewAttributeApi,
   updateAttribute as updateAttributeApi,
   deleteAttribute as deleteAttributeApi,
+  getSubCategory as getSubCategoryApi,
+  addNewSubCategory as addNewSubCategoryApi,
+  updateSubCategory as updateSubCategoryApi,
+  deleteSubCategory as deleteSubCategoryApi,
 } from "../../helpers/fakebackend_helper";
 
 export const getProducts = createAsyncThunk(
@@ -449,6 +453,62 @@ export const addNewAttribute = createAsyncThunk(
       return data;
     } catch (error) {
       toast.error("Attribute Added Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const getSubCategory = createAsyncThunk(
+  "ecommerce/getSubCategory",
+  async () => {
+    try {
+      const response = await getSubCategoryApi(); // Gọi API để lấy danh sách thương hiệu
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const updateSubCategory = createAsyncThunk(
+  "ecommerce/updateSubCategory",
+  async (SubCategory) => {
+    try {
+      const response = updateSubCategoryApi(SubCategory); // Gọi API cập nhật thông tin thương hiệu
+      const data = await response;
+      toast.success("SubCategory Updated Successfully", { autoClose: 3000 });
+      return data;
+    } catch (error) {
+      toast.error("SubCategory Updated Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const deleteSubCategory = createAsyncThunk(
+  "ecommerce/deleteSubCategory",
+  async (SubCategory) => {
+    try {
+      const response = await deleteSubCategoryApi(SubCategory); // Gọi API xóa thương hiệu
+      toast.success("SubCategory Deleted Successfully", { autoClose: 3000 });
+      return { SubCategory, ...response };
+    } catch (error) {
+      toast.error("SubCategory Deleted Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const addNewSubCategory = createAsyncThunk(
+  "ecommerce/addNewSubCategory",
+  async (SubCategory) => {
+    try {
+      const response = addNewSubCategoryApi(SubCategory); // Gọi API thêm thương hiệu mới
+      const data = await response;
+      toast.success("SubCategory Added Successfully", { autoClose: 3000 });
+      return data;
+    } catch (error) {
+      toast.error("SubCategory Added Failed", { autoClose: 3000 });
       throw error;
     }
   }

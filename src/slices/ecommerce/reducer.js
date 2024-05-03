@@ -31,6 +31,10 @@ import {
   getAttribute,
   updateAttribute,
   deleteAttribute,
+  addNewSubCategory,
+  getSubCategory,
+  updateSubCategory,
+  deleteSubCategory,
 } from "./thunk";
 export const initialState = {
   products: [],
@@ -42,6 +46,7 @@ export const initialState = {
   categories: [],
   brands: [],
   Colors: [],
+  subcategories: [],
   Attribute: [],
   error: null,
 };
@@ -388,6 +393,50 @@ const EcommerceSlice = createSlice({
     });
 
     builder.addCase(deleteAttribute.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể xóa thương hiệu
+    });
+    // Reducers for SubCategory
+    builder.addCase(getSubCategory.fulfilled, (state, action) => {
+      state.subcategories = action.payload.data; // Gán danh sách thương hiệu từ payload vào state
+      state.error = null;
+    });
+
+    builder.addCase(getSubCategory.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể lấy danh sách thương hiệu
+    });
+
+    builder.addCase(addNewSubCategory.fulfilled, (state, action) => {
+      state.subcategories.push(action.payload.data); // Thêm thương hiệu mới vào danh sách thương hiệu
+      state.isBrandCreated = true; // Đặt cờ để cho biết thương hiệu đã được tạo thành công
+      state.error = null;
+    });
+
+    builder.addCase(addNewSubCategory.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể thêm mới thương hiệu
+    });
+
+    builder.addCase(updateSubCategory.fulfilled, (state, action) => {
+      state.subcategories = state.subcategories.map((SubCategory) =>
+        SubCategory._id.toString() === action.payload.data._id.toString()
+          ? { ...SubCategory, ...action.payload.data }
+          : SubCategory
+      ); // Cập nhật thông tin thương hiệu trong danh sách thương hiệu
+      state.error = null;
+    });
+
+    builder.addCase(updateSubCategory.rejected, (state, action) => {
+      state.error = action.error; // Xử lý lỗi khi không thể cập nhật thương hiệu
+    });
+
+    builder.addCase(deleteSubCategory.fulfilled, (state, action) => {
+      state.subcategories = state.subcategories.filter(
+        (SubCategory) =>
+          SubCategory._id.toString() !== action.payload.SubCategory.toString()
+      ); // Xóa thương hiệu khỏi danh sách thương hiệu
+      state.error = null;
+    });
+
+    builder.addCase(deleteSubCategory.rejected, (state, action) => {
       state.error = action.error; // Xử lý lỗi khi không thể xóa thương hiệu
     });
   },

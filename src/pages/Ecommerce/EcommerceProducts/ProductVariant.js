@@ -11,13 +11,14 @@ import {
   Row,
 } from "reactstrap";
 import classnames from "classnames";
-import { Input as InputNew, Select } from "antd";
+import { Input as InputNew, Select as AntSelect } from "antd";
+import Select from "react-select";
 
 const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
   const [gst, setGst] = useState("include");
   let formattedPrice;
   let discountPrice =
-    (validation.values.price * validation.values.discount) / 100;
+    (validation.values.originPrice * validation.values.discount) / 100;
   let gstPercentage = validation.values.cgst + validation.values.sgst;
 
   if (gst === "include") {
@@ -26,36 +27,36 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
       currency: "INR",
     }).format(
       discountPrice !== 0
-        ? validation.values.price -
+        ? validation.values.originPrice -
             (discountPrice + (discountPrice * gstPercentage) / 100)
-        : validation.values.price - gstPercentage / 100
+        : validation.values.originPrice - gstPercentage / 100
     );
   } else {
-    let r = (validation.values.price * gstPercentage) / 100;
+    let r = (validation.values.originPrice * gstPercentage) / 100;
     formattedPrice = new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
     }).format(
       (discountPrice !== 0
-        ? validation.values.price - discountPrice
-        : validation.values.price) + r
+        ? validation.values.originPrice - discountPrice
+        : validation.values.originPrice) + r
     );
   }
 
   useEffect(() => {
-    if (validation.values.newPrice > validation.values.price) {
+    if (validation.values.price > validation.values.originPrice) {
       setGst("exclude");
     } else {
       setGst("include");
     }
-  }, [validation.values.newPrice]);
+  }, [validation.values.price]);
 
-  const { Option } = Select;
+  const { Option } = AntSelect;
   const selectAfter = (
-    <Select onChange={(e) => setGst(e)} defaultValue="include">
+    <AntSelect onChange={(e) => setGst(e)} defaultValue="include">
       <Option value="include">include</Option>
       <Option value="exclude">exclude</Option>
-    </Select>
+    </AntSelect>
   );
 
   return (
@@ -87,16 +88,20 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 <Input
                   type="number"
                   placeholder="Enter price"
-                  value={validation.values.price || ""}
+                  value={validation.values.originPrice || ""}
                   onChange={validation.handleChange}
-                  invalid={validation.errors.price && validation.touched.price}
-                  name="price"
+                  invalid={
+                    validation.errors.originPrice &&
+                    validation.touched.originPrice
+                  }
+                  name="originPrice"
                 />
-                {validation.errors.price && validation.touched.price && (
-                  <div className="invalid-feedback">
-                    {validation.errors.price}
-                  </div>
-                )}
+                {validation.errors.originPrice &&
+                  validation.touched.originPrice && (
+                    <div className="invalid-feedback">
+                      {validation.errors.originPrice}
+                    </div>
+                  )}
               </div>
             </Col>
             <Col sm={6}>
@@ -173,14 +178,16 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 <Input
                   type="text"
                   placeholder="Enter the warehouse quantity"
-                  value={validation.values.stock || ""}
+                  value={validation.values.quantity || ""}
                   onChange={validation.handleChange}
-                  invalid={validation.errors.stock && validation.touched.stock}
-                  name="stock"
+                  invalid={
+                    validation.errors.quantity && validation.touched.quantity
+                  }
+                  name="quantity"
                 />
-                {validation.errors.stock && validation.touched.stock && (
+                {validation.errors.quantity && validation.touched.quantity && (
                   <div className="invalid-feedback">
-                    {validation.errors.stock}
+                    {validation.errors.quantity}
                   </div>
                 )}
               </div>
@@ -192,16 +199,18 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                   className="text-danger"
                   readOnly={true}
                   onChange={validation.handleChange}
-                  invalid={
-                    validation.errors.newPrice && validation.touched.newPrice
-                  }
-                  name="newPrice"
+                  invalid={validation.errors.price && validation.touched.price}
+                  name="price"
                 >
-                  <Input disabled value={formattedPrice} />
+                  <Input
+                    onChange={validation.handleChange}
+                    disabled
+                    value={formattedPrice}
+                  />
                 </div>
-                {validation.errors.newPrice && validation.touched.newPrice && (
+                {validation.errors.price && validation.touched.price && (
                   <div className="invalid-feedback">
-                    {validation.errors.newPrice}
+                    {validation.errors.price}
                   </div>
                 )}
               </div>
@@ -220,14 +229,6 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                   invalid={validation.errors.cgst && validation.touched.cgst}
                   name="cgst"
                 />
-                {/* <Input
-                  type="text"
-                  placeholder="Enter the cgst"
-                  value={validation.values.cgst || ""}
-                  onChange={validation.handleChange}
-                  invalid={validation.errors.cgst && validation.touched.cgst}
-                  name="cgst"
-                /> */}
                 {validation.errors.cgst && validation.touched.cgst && (
                   <div className="invalid-feedback">
                     {validation.errors.cgst}
@@ -247,14 +248,6 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                   invalid={validation.errors.sgst && validation.touched.sgst}
                   name="sgst"
                 />
-                {/* <Input
-                  type="text"
-                  placeholder="Enter the sgst"
-                  value={validation.values.sgst || ""}
-                  onChange={validation.handleChange}
-                  invalid={validation.errors.sgst && validation.touched.sgst}
-                  name="sgst"
-                /> */}
                 {validation.errors.sgst && validation.touched.sgst && (
                   <div className="invalid-feedback">
                     {validation.errors.sgst}
@@ -278,6 +271,29 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 {validation.errors.video && validation.touched.video && (
                   <div className="invalid-feedback">
                     {validation.errors.video}
+                  </div>
+                )}
+              </div>
+            </Col>
+            <Col sm={6}>
+              <div className="mb-3">
+                <label className="form-label">Gender</label>
+                <Select
+                  // value={validation.values.cod || ""}
+                  onChange={(selectedOption) =>
+                    validation.handleChange("gender")(selectedOption.value)
+                  }
+                  name="gender"
+                  options={[
+                    { label: "male", value: "Male" },
+                    { label: "female", value: "Female" },
+                    { label: "both", value: "Both" },
+                  ]}
+                  isInvalid={validation.errors.cod && validation.touched.cod}
+                />
+                {validation.errors.gender && validation.touched.gender && (
+                  <div className="invalid-feedback">
+                    {validation.errors.gender}
                   </div>
                 )}
               </div>

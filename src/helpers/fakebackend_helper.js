@@ -107,6 +107,15 @@ export const deleteAttribute = (Attribute) =>
 export const updateAttribute = (Attribute) =>
   api.patch(url.UPDATE_Attribute + "/" + Attribute._id, Attribute);
 
+//SubCategory
+export const getSubCategory = () => api.get(url.GET_SubCategory);
+export const addNewSubCategory = (SubCategory) =>
+  api.create(url.ADD_NEW_SubCategory, SubCategory);
+export const deleteSubCategory = (SubCategory) =>
+  api.delete(url.DELETE_SubCategory + "/" + SubCategory);
+export const updateSubCategory = (SubCategory) =>
+  api.patch(url.UPDATE_SubCategory + "/" + SubCategory._id, SubCategory);
+
 // get Upcomming Events
 export const getUpCommingEvent = () => api.get(url.GET_UPCOMMINGEVENT);
 
