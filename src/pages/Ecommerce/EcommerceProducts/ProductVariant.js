@@ -49,7 +49,10 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
     } else {
       setGst("include");
     }
-  }, [validation.values.price]);
+    if (formattedPrice) {
+      validation.setFieldValue("price", formattedPrice);
+    }
+  }, [validation.values.price, formattedPrice]);
 
   const { Option } = Select;
   const selectAfter = (

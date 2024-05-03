@@ -88,6 +88,7 @@ const EcommerceAddProduct = (props) => {
       const foundProduct = products.find(
         (product) => product._id === productId._id
       );
+      console.log("foundProduct: ", foundProduct);
       if (foundProduct) {
         await setSelectedProduct(foundProduct);
         setIsEditMode(true);
@@ -131,8 +132,16 @@ const EcommerceAddProduct = (props) => {
         validation.setFieldValue("sgst", foundProduct.sgst);
         validation.setFieldValue("shippingdays", foundProduct.shippingdays);
         validation.setFieldValue("cod", foundProduct.cod);
+        validation.setFieldValue(
+          "type",
+          foundProduct?.type.length > 0
+            ? JSON.parse(foundProduct?.type)
+            : foundProduct?.type
+        );
+        validation.setFieldValue("gender", foundProduct.gender);
         setVariation(JSON.parse(foundProduct.productVariation));
         setAttributeData(JSON.parse(foundProduct?.attribute));
+        setSizeAndVar(JSON.parse(foundProduct.variation));
         await setselectedFiles(foundProduct.images);
         validation.setFieldValue("images", selectedFiles);
         validation.setFieldValue(
@@ -398,6 +407,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("type", JSON.stringify(values.type));
       newProduct.append("variation", JSON.stringify(sizeAndVar));
       newProduct.append("gender", values.gender);
+      newProduct.append("price", values.price);
       if (isEditMode !== true) {
         values.images.forEach((file) => {
           newProduct.append("images", file);
