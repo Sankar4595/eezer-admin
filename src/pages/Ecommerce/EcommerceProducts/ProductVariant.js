@@ -17,6 +17,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
   const [gst, setGst] = useState("include");
 
   let formattedPrice;
+  let normalPrice;
   let discountPrice =
     (validation.values.originPrice * validation.values.discount) / 100;
   let gstPercentage = validation.values.cgst + validation.values.sgst;
@@ -31,6 +32,11 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
             (discountPrice + (discountPrice * gstPercentage) / 100)
         : validation.values.originPrice - gstPercentage / 100
     );
+    normalPrice =
+      discountPrice !== 0
+        ? validation.values.originPrice -
+          (discountPrice + (discountPrice * gstPercentage) / 100)
+        : validation.values.originPrice - gstPercentage / 100;
   } else {
     let r = (validation.values.originPrice * gstPercentage) / 100;
     formattedPrice = new Intl.NumberFormat("en-IN", {
@@ -41,6 +47,10 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
         ? validation.values.originPrice - discountPrice
         : validation.values.originPrice) + r
     );
+    normalPrice =
+      (discountPrice !== 0
+        ? validation.values.originPrice - discountPrice
+        : validation.values.originPrice) + r;
   }
 
   useEffect(() => {
@@ -49,10 +59,10 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
     } else {
       setGst("include");
     }
-    if (formattedPrice) {
-      validation.setFieldValue("price", formattedPrice);
+    if (normalPrice) {
+      validation.setFieldValue("price", normalPrice);
     }
-  }, [validation.values.price, formattedPrice]);
+  }, [validation.values.price, normalPrice]);
 
   const { Option } = Select;
   const selectAfter = (
