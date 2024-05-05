@@ -139,7 +139,6 @@ const EcommerceAddProduct = (props) => {
             : foundProduct?.type
         );
         validation.setFieldValue("gender", foundProduct.gender);
-        setVariation(JSON.parse(foundProduct.productVariation));
         setAttributeData(JSON.parse(foundProduct?.attribute));
         setSizeAndVar(JSON.parse(foundProduct.variation));
         await setselectedFiles(foundProduct.images);
@@ -150,6 +149,13 @@ const EcommerceAddProduct = (props) => {
             ? JSON.parse(foundProduct?.attribute)
             : foundProduct?.attribute
         );
+        validation.setFieldValue(
+          "productVariation",
+          foundProduct?.productVariation.length > 0
+            ? JSON.parse(foundProduct?.productVariation)
+            : foundProduct?.productVariation
+        );
+        setVariation(JSON.parse(foundProduct.productVariation));
       }
     };
 
@@ -307,7 +313,6 @@ const EcommerceAddProduct = (props) => {
       brand: [],
       color: [],
       attribute: [],
-      specification: "",
       description: "",
       video: "",
       weight: "",
@@ -355,9 +360,6 @@ const EcommerceAddProduct = (props) => {
       description: Yup.string()
         .required("Please enter product description")
         .max(3000, "Cannot exceed 3000 characters"),
-      specification: Yup.string()
-        .required("Please enter product specifications")
-        .max(3000, "Cannot exceed 3000 characters"),
       images: Yup.array().test(
         "images-validation",
         "Please add at least 1 photo",
@@ -391,7 +393,6 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("discount", values.discount);
       newProduct.append("isPublish", values.isPublish.value);
       newProduct.append("description", values.description);
-      newProduct.append("specification", values.specification);
       newProduct.append("video", values.video);
       newProduct.append("weight", values.weight);
       newProduct.append("discountenddate", values.discountenddate);
@@ -507,14 +508,21 @@ const EcommerceAddProduct = (props) => {
     }
   }, [validation?.values?.attribute]);
 
-  const handleInputChange = (rowIndex, colIndex, value, name) => {
-    const updatedVariations = [...variation];
-    updatedVariations[rowIndex][colIndex][name] = value;
-    setVariation(updatedVariations);
+  console.log("variation: ", variation);
+  const handleInputChange = (rowIndex, colIndex, value, field) => {
+    setVariation((prevVariation) => {
+      const updatedVariation = [...prevVariation];
+      updatedVariation[rowIndex] = [...updatedVariation[rowIndex]];
+      updatedVariation[rowIndex][colIndex] = {
+        ...updatedVariation[rowIndex][colIndex],
+      };
+      updatedVariation[rowIndex][colIndex][field] = value;
+      return updatedVariation;
+    });
   };
 
   let resultColor = {
-    label: "color",
+    label: "Color",
     value: "color",
     data: validation.values.color,
   };
@@ -557,17 +565,32 @@ const EcommerceAddProduct = (props) => {
                 </td>
                 <td>
                   <Input
-                    value={variation?.Price || ""}
+                    value={variation?.oldPrice || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
                         colIndex,
                         e.target.value,
-                        "Price"
+                        "oldPrice"
                       )
                     }
                     type="text"
-                    placeholder="Price"
+                    placeholder="Old Price"
+                  />
+                </td>
+                <td>
+                  <Input
+                    value={variation?.NewPrice || ""}
+                    onChange={(e) =>
+                      handleInputChange(
+                        rowIndex,
+                        colIndex,
+                        e.target.value,
+                        "NewPrice"
+                      )
+                    }
+                    type="text"
+                    placeholder="New Price"
                   />
                 </td>
                 <td>
@@ -585,29 +608,6 @@ const EcommerceAddProduct = (props) => {
                     placeholder="Qty"
                   />
                 </td>
-                {/* <td>
-                  <div>
-                    <Input
-                      // value={variation?.Image || ""}
-                      type="file"
-                      onChange={(e) =>
-                        handleInputChange(
-                          rowIndex,
-                          colIndex,
-                          e.target.files,
-                          "Image"
-                        )
-                      }
-                    />
-                    {variation?.Image ? (
-                      <p>{variation.Image[0].name}</p>
-                    ) : (
-                      <p>
-                        Drag 'n' drop some files here, or click to select files
-                      </p>
-                    )}
-                  </div>
-                </td> */}
               </>
             )}
           </React.Fragment>
@@ -627,7 +627,7 @@ const EcommerceAddProduct = (props) => {
           }}
         >
           <Row>
-            <Col lg={8}>
+            <Col>
               <Card>
                 <CardBody>
                   <div className="mb-3">
@@ -672,7 +672,7 @@ const EcommerceAddProduct = (props) => {
                         {validation.errors.description}
                       </Alert>
                     )}
-                    <Label>Detailed parameters</Label>
+                    {/* <Label>Detailed parameters</Label>
                     <CKEditor
                       editor={ClassicEditor}
                       data={editorSpecData} // Sử dụng state để cung cấp dữ liệu cho CKEditor
@@ -687,8 +687,257 @@ const EcommerceAddProduct = (props) => {
                         <strong>An error occurred! </strong>
                         {validation.errors.specification}
                       </Alert>
-                    )}
+                    )} */}
                   </div>
+                  <Row>
+                    <Col sm={6}>
+                      <Card>
+                        <CardHeader>
+                          <h5 className="card-title mb-0">Status</h5>{" "}
+                        </CardHeader>
+                        <CardBody>
+                          <div>
+                            <Label
+                              htmlFor="choices-publish-visibility-input"
+                              className="form-label"
+                            >
+                              Hide/Show
+                            </Label>
+
+                            <Select
+                              name="isPublish"
+                              options={IsPublishOptions}
+                              value={validation.values.isPublish}
+                              onBlur={validation.handleBlur}
+                              onChange={(selectedOption) => {
+                                validation.setFieldValue(
+                                  "isPublish",
+                                  selectedOption
+                                );
+                              }}
+                            />
+                            {validation.touched.isPublish &&
+                            validation.errors.isPublish ? (
+                              <Alert color="danger">
+                                <strong>An error occurred! </strong>
+                                {validation.errors.isPublish}
+                              </Alert>
+                            ) : null}
+                          </div>
+                        </CardBody>
+                      </Card>
+                      <EcommerceCategory
+                        categoryId={validation.values.category}
+                        errors={validation.errors.category}
+                        blur={validation.touched.category}
+                        handleCategoryBlur={handleCategoryBlur}
+                        handleCategoryChange={handleCategoryChange}
+                      />
+                    </Col>
+                    <Col sm={6}>
+                      <EcommerceBrand
+                        brandId={validation.values.brand}
+                        errors={validation.errors.brand}
+                        blur={validation.touched.brand}
+                        handleBrandBlur={handleBrandBlur}
+                        handleBrandChange={handleBrandChange}
+                      />
+
+                      <EcommerceSubCategory
+                        categoryId={validation.values.type}
+                        errors={validation.errors.type}
+                        blur={validation.touched.type}
+                        handleCategoryBlur={handleSubCategoryBlur}
+                        handleCategoryChange={handleSubCategoryChange}
+                      />
+                    </Col>
+                    <Col sm={6}>
+                      <EcommerceColor
+                        ColorId={validation.values.color}
+                        errors={validation.errors.color}
+                        blur={validation.touched.color}
+                        handleColorBlur={handleColorBlur}
+                        handleColorChange={handleColorChange}
+                      />
+
+                      <EcommerceAttributes
+                        AttributeId={validation.values.attribute}
+                        errors={validation.errors.attribute}
+                        blur={validation.touched.attribute}
+                        handleAttributeBlur={handleattributeBlur}
+                        handleAttributeChange={handleattributeChange}
+                      />
+                      {validation?.values?.attribute?.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <h5 className="card-title mb-0">
+                              Choose the attributes of each products
+                            </h5>
+                          </CardHeader>
+                          <CardBody>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "15px",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              {validation?.values?.attribute?.length > 0 &&
+                                validation?.values?.attribute.map((val, i) => {
+                                  return (
+                                    <Select
+                                      key={i}
+                                      name={val.label}
+                                      isMulti
+                                      value={
+                                        attributeData.length > 0
+                                          ? attributeData[i]?.data
+                                          : ""
+                                      }
+                                      options={val.data}
+                                      onChange={(e) => {
+                                        handleAttributeDataChange(e, val);
+                                      }}
+                                    />
+                                  );
+                                })}
+                            </div>
+                          </CardBody>
+                        </Card>
+                      )}
+                    </Col>
+                    <Col sm={6}>
+                      <Card
+                        onMouseEnter={handleCardMouseEnter}
+                        onMouseLeave={handleCardMouseLeave}
+                        className={`mb-3 ${isHovered ? "active" : ""}`}
+                      >
+                        <CardHeader>
+                          <h5 className="card-title mb-0">Product image</h5>
+                        </CardHeader>
+                        <CardBody>
+                          <div>
+                            <h5 className="fs-14 mb-1">Some other photos</h5>
+                            <p className="text-muted">Add product photo</p>
+
+                            <Dropzone
+                              onDrop={(acceptedFiles) => {
+                                const newFiles = acceptedFiles;
+                                handleAcceptedFiles(newFiles);
+                              }}
+                            >
+                              {({ getRootProps, getInputProps }) => (
+                                <div className="dropzone dz-clickable">
+                                  <div
+                                    className="dz-message needsclick mt-4"
+                                    {...getRootProps()}
+                                  >
+                                    <div className="mb-3">
+                                      <i className="display-4 text-muted ri-upload-cloud-2-fill" />
+                                    </div>
+                                    <h5>
+                                      Drag and drop or click to post photos
+                                      (minimum 1 image)
+                                    </h5>
+                                  </div>
+                                </div>
+                              )}
+                            </Dropzone>
+
+                            <div
+                              className="list-unstyled mb-0"
+                              id="file-previews"
+                            >
+                              {selectedFiles.map((f, i) => {
+                                return (
+                                  <Card
+                                    className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
+                                    key={i + "-file"}
+                                  >
+                                    <div className="p-2">
+                                      <Row className="align-items-center">
+                                        <Col className="col-auto">
+                                          <img
+                                            data-dz-thumbnail=""
+                                            height="80"
+                                            className="avatar-sm rounded bg-light"
+                                            alt={f.name}
+                                            src={f.preview || f}
+                                          />
+                                        </Col>
+                                        <Col>
+                                          <Link
+                                            to="#"
+                                            className="text-muted font-weight-bold"
+                                          >
+                                            {f.name}
+                                          </Link>
+                                          <p className="mb-0">
+                                            <strong>{f.formattedSize}</strong>
+                                          </p>
+                                        </Col>
+
+                                        <div className="col-xl-3 col-lg-4 col-sm-6">
+                                          <button
+                                            type="button"
+                                            className="btn btn-danger"
+                                            onBlur={validation.handleBlur}
+                                            onClick={() => handleRemoveImage(i)} // Truyền chỉ mục i vào hàm xử lý
+                                          >
+                                            <i className="mdi mdi-archive-cancel"></i>{" "}
+                                            Erase
+                                          </button>
+                                        </div>
+                                      </Row>
+                                    </div>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                            {isHovered && (
+                              <Alert color="primary" className="border-0">
+                                <strong> Notifications </strong> Tips:{" "}
+                                <b>Ctrl + V to paste the image.</b>{" "}
+                              </Alert>
+                            )}
+                            {validation.errors.images &&
+                            validation.touched.images ? (
+                              <Alert color="danger">
+                                <strong>An error occurred! </strong>
+                                {validation.errors.images}
+                              </Alert>
+                            ) : null}
+                          </div>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <h5 className="card-title mb-0">Product Variation</h5>{" "}
+                </CardHeader>
+                <CardBody>
+                  <Table bordered>
+                    <thead>
+                      <tr>
+                        {[...attributeData, resultColor].map((category) => (
+                          <th key={`header-${category.label}`}>
+                            {category.label}
+                          </th>
+                        ))}
+                        <th>SKU</th>
+                        <th>Old Price</th>
+                        <th>New Price</th>
+                        <th>Qty</th>
+                        {/* <th>Image Upload</th> */}
+                      </tr>
+                    </thead>
+                    <tbody>{renderRows()}</tbody>
+                  </Table>
                 </CardBody>
               </Card>
               <div>
@@ -754,33 +1003,7 @@ const EcommerceAddProduct = (props) => {
                     </Row>
                   </CardBody>
                 </Card>
-
-                {/* other components */}
-                <Card>
-                  <CardHeader>
-                    <h5 className="card-title mb-0">Product Variation</h5>{" "}
-                  </CardHeader>
-                  <CardBody>
-                    <Table bordered>
-                      <thead>
-                        <tr>
-                          {[...attributeData, resultColor].map((category) => (
-                            <th key={`header-${category.label}`}>
-                              {category.label}
-                            </th>
-                          ))}
-                          <th>SKU</th>
-                          <th>Price</th>
-                          <th>Qty</th>
-                          {/* <th>Image Upload</th> */}
-                        </tr>
-                      </thead>
-                      <tbody>{renderRows()}</tbody>
-                    </Table>
-                  </CardBody>
-                </Card>
               </div>
-
               <div className="text-end mb-3">
                 {isEditMode ? (
                   <button type="submit" className="btn btn-primary w-sm">
@@ -792,219 +1015,6 @@ const EcommerceAddProduct = (props) => {
                   </button>
                 )}
               </div>
-            </Col>
-            <Col lg={4}>
-              <Card>
-                <CardHeader>
-                  <h5 className="card-title mb-0">Status</h5>{" "}
-                </CardHeader>
-                <CardBody>
-                  <div>
-                    <Label
-                      htmlFor="choices-publish-visibility-input"
-                      className="form-label"
-                    >
-                      Hide/Show
-                    </Label>
-
-                    <Select
-                      name="isPublish"
-                      options={IsPublishOptions}
-                      value={validation.values.isPublish}
-                      onBlur={validation.handleBlur}
-                      onChange={(selectedOption) => {
-                        validation.setFieldValue("isPublish", selectedOption);
-                      }}
-                    />
-                    {validation.touched.isPublish &&
-                    validation.errors.isPublish ? (
-                      <Alert color="danger">
-                        <strong>An error occurred! </strong>
-                        {validation.errors.isPublish}
-                      </Alert>
-                    ) : null}
-                  </div>
-                </CardBody>
-              </Card>
-              <EcommerceCategory
-                categoryId={validation.values.category}
-                errors={validation.errors.category}
-                blur={validation.touched.category}
-                handleCategoryBlur={handleCategoryBlur}
-                handleCategoryChange={handleCategoryChange}
-              />
-
-              <EcommerceSubCategory
-                categoryId={validation.values.type}
-                errors={validation.errors.type}
-                blur={validation.touched.type}
-                handleCategoryBlur={handleSubCategoryBlur}
-                handleCategoryChange={handleSubCategoryChange}
-              />
-
-              <EcommerceBrand
-                brandId={validation.values.brand}
-                errors={validation.errors.brand}
-                blur={validation.touched.brand}
-                handleBrandBlur={handleBrandBlur}
-                handleBrandChange={handleBrandChange}
-              />
-
-              <EcommerceColor
-                ColorId={validation.values.color}
-                errors={validation.errors.color}
-                blur={validation.touched.color}
-                handleColorBlur={handleColorBlur}
-                handleColorChange={handleColorChange}
-              />
-
-              <EcommerceAttributes
-                AttributeId={validation.values.attribute}
-                errors={validation.errors.attribute}
-                blur={validation.touched.attribute}
-                handleAttributeBlur={handleattributeBlur}
-                handleAttributeChange={handleattributeChange}
-              />
-
-              {validation?.values?.attribute?.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <h5 className="card-title mb-0">
-                      Choose the attributes of each products
-                    </h5>
-                  </CardHeader>
-                  <CardBody>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "15px",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {validation?.values?.attribute?.length > 0 &&
-                        validation?.values?.attribute.map((val, i) => {
-                          return (
-                            <Select
-                              key={i}
-                              name={val.label}
-                              isMulti
-                              value={
-                                attributeData.length > 0
-                                  ? attributeData[i]?.data
-                                  : ""
-                              }
-                              options={val.data}
-                              onChange={(e) => {
-                                handleAttributeDataChange(e, val);
-                              }}
-                            />
-                          );
-                        })}
-                    </div>
-                  </CardBody>
-                </Card>
-              )}
-
-              <Card
-                onMouseEnter={handleCardMouseEnter}
-                onMouseLeave={handleCardMouseLeave}
-                className={`mb-3 ${isHovered ? "active" : ""}`}
-              >
-                <CardHeader>
-                  <h5 className="card-title mb-0">Product image</h5>
-                </CardHeader>
-                <CardBody>
-                  <div>
-                    <h5 className="fs-14 mb-1">Some other photos</h5>
-                    <p className="text-muted">Add product photo</p>
-
-                    <Dropzone
-                      onDrop={(acceptedFiles) => {
-                        const newFiles = acceptedFiles;
-                        handleAcceptedFiles(newFiles);
-                      }}
-                    >
-                      {({ getRootProps, getInputProps }) => (
-                        <div className="dropzone dz-clickable">
-                          <div
-                            className="dz-message needsclick mt-4"
-                            {...getRootProps()}
-                          >
-                            <div className="mb-3">
-                              <i className="display-4 text-muted ri-upload-cloud-2-fill" />
-                            </div>
-                            <h5>
-                              Drag and drop or click to post photos (minimum 1
-                              image)
-                            </h5>
-                          </div>
-                        </div>
-                      )}
-                    </Dropzone>
-
-                    <div className="list-unstyled mb-0" id="file-previews">
-                      {selectedFiles.map((f, i) => {
-                        return (
-                          <Card
-                            className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
-                            key={i + "-file"}
-                          >
-                            <div className="p-2">
-                              <Row className="align-items-center">
-                                <Col className="col-auto">
-                                  <img
-                                    data-dz-thumbnail=""
-                                    height="80"
-                                    className="avatar-sm rounded bg-light"
-                                    alt={f.name}
-                                    src={f.preview || f.url}
-                                  />
-                                </Col>
-                                <Col>
-                                  <Link
-                                    to="#"
-                                    className="text-muted font-weight-bold"
-                                  >
-                                    {f.name}
-                                  </Link>
-                                  <p className="mb-0">
-                                    <strong>{f.formattedSize}</strong>
-                                  </p>
-                                </Col>
-
-                                <div className="col-xl-3 col-lg-4 col-sm-6">
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger"
-                                    onBlur={validation.handleBlur}
-                                    onClick={() => handleRemoveImage(i)} // Truyền chỉ mục i vào hàm xử lý
-                                  >
-                                    <i className="mdi mdi-archive-cancel"></i>{" "}
-                                    Erase
-                                  </button>
-                                </div>
-                              </Row>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                    {isHovered && (
-                      <Alert color="primary" className="border-0">
-                        <strong> Notifications </strong> Tips:{" "}
-                        <b>Ctrl + V to paste the image.</b>{" "}
-                      </Alert>
-                    )}
-                    {validation.errors.images && validation.touched.images ? (
-                      <Alert color="danger">
-                        <strong>An error occurred! </strong>
-                        {validation.errors.images}
-                      </Alert>
-                    ) : null}
-                  </div>
-                </CardBody>
-              </Card>
             </Col>
           </Row>
         </Form>

@@ -7,9 +7,10 @@ axios.defaults.baseURL = api.API_URL;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 // content type
-const token = JSON.parse(sessionStorage.getItem("authUser")) ? JSON.parse(sessionStorage.getItem("authUser")).token : null;
-if (token)
-  axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+const token = JSON.parse(sessionStorage.getItem("authUser"))
+  ? JSON.parse(sessionStorage.getItem("authUser")).token
+  : null;
+if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 
 // intercepting to capture errors
 axios.interceptors.response.use(
@@ -80,45 +81,45 @@ class APIClient {
       withCredentials: true, // Bật withCredentials để gửi cookie và thông tin xác thực
     });
   };
-  
+
   create = (url, data) => {
     return axios.post(url, data, {
       withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
-      credentials: 'include',
+      credentials: "include",
     });
   };
   /**
    * Updates data
    */
   patch = (url, data) => {
-    return axios.patch(url, data,{
+    return axios.patch(url, data, {
       withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
-      credentials: 'include',
+      credentials: "include",
     });
   };
   patchFormData = (url, formData) => {
     return axios.patch(url, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
-        credentials: 'include',
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
+      credentials: "include",
     });
-  }
+  };
 
   put = (url, data) => {
-    return axios.put(url, data,{
+    return axios.put(url, data, {
       withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
-      credentials: 'include',
+      credentials: "include",
     });
   };
   /**
    * Delete
    */
   delete = (url, config) => {
-    return axios.delete(url,{
+    return axios.delete(url, {
       withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
-      credentials: 'include',
+      credentials: "include",
     });
   };
 }

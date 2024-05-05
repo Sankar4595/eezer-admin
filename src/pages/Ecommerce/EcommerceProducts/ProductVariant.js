@@ -60,7 +60,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
       setGst("include");
     }
     if (normalPrice) {
-      validation.setFieldValue("price", normalPrice);
+      validation.setFieldValue("price", normalPrice.toFixed());
     }
   }, [validation.values.price, normalPrice]);
 
@@ -75,28 +75,14 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
     <>
       <Card>
         <CardHeader>
-          <Nav className="nav-tabs-custom card-header-tabs border-bottom-0">
-            <NavItem>
-              <NavLink
-                style={{ cursor: "pointer" }}
-                className={classnames({
-                  active: customActiveTab === "1",
-                })}
-                onClick={() => {
-                  toggleCustom("1");
-                }}
-              >
-                Sales information
-              </NavLink>
-            </NavItem>
-          </Nav>
+          <h5 className="card-title mb-0">Sales information</h5>
         </CardHeader>
 
         <CardBody>
           <Row>
             <Col sm={6}>
               <div className="mb-3">
-                <label className="form-label">Price</label>
+                <label className="form-label">Old Price</label>
                 <Input
                   type="number"
                   placeholder="Enter originPrice"
@@ -118,6 +104,28 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
             </Col>
             <Col sm={6}>
               <div className="mb-3">
+                <label className="form-label">New price</label>
+                <div
+                  className="text-danger"
+                  readOnly={true}
+                  onChange={validation.handleChange}
+                  invalid={validation.errors.price && validation.touched.price}
+                  name="price"
+                >
+                  <Input disabled value={formattedPrice} />
+                </div>
+                {validation.errors.price && validation.touched.price && (
+                  <div className="invalid-feedback">
+                    {validation.errors.price}
+                  </div>
+                )}
+              </div>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col sm={6}>
+              <div className="mb-3">
                 <label className="form-label">Discount</label>
                 <Input
                   type="number"
@@ -137,29 +145,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 )}
               </div>
             </Col>
-          </Row>
 
-          <Row>
-            <Col sm={6}>
-              <div className="mb-3">
-                <label className="form-label">Weight</label>
-                <Input
-                  type="Weight"
-                  placeholder="Enter Weight"
-                  onChange={validation.handleChange}
-                  value={validation.values.weight || ""}
-                  invalid={
-                    validation.errors.weight && validation.touched.weight
-                  }
-                  name="weight"
-                />
-                {validation.errors.weight && validation.touched.weight && (
-                  <div className="invalid-feedback">
-                    {validation.errors.weight}
-                  </div>
-                )}
-              </div>
-            </Col>
             <Col sm={6}>
               <div className="mb-3">
                 <label className="form-label">Discount End Date</label>
@@ -206,19 +192,20 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
             </Col>
             <Col sm={6}>
               <div className="mb-3">
-                <label className="form-label">New price</label>
-                <div
-                  className="text-danger"
-                  readOnly={true}
+                <label className="form-label">Weight</label>
+                <Input
+                  type="Weight"
+                  placeholder="Enter Weight"
                   onChange={validation.handleChange}
-                  invalid={validation.errors.price && validation.touched.price}
-                  name="price"
-                >
-                  <Input disabled value={formattedPrice} />
-                </div>
-                {validation.errors.price && validation.touched.price && (
+                  value={validation.values.weight || ""}
+                  invalid={
+                    validation.errors.weight && validation.touched.weight
+                  }
+                  name="weight"
+                />
+                {validation.errors.weight && validation.touched.weight && (
                   <div className="invalid-feedback">
-                    {validation.errors.price}
+                    {validation.errors.weight}
                   </div>
                 )}
               </div>
@@ -301,7 +288,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
             </Col>
             <Col sm={6}>
               <div className="mb-3">
-                <label className="form-label">Gender</label>
+                <label className="form-label">For</label>
                 {/* <Input
                   type="text"
                   placeholder="Enter here..."
@@ -319,6 +306,7 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 >
                   <Option value={"male"}>Male</Option>
                   <Option value={"female"}>Female</Option>
+                  <Option value={"both"}>Both</Option>
                 </Select>
                 {validation.errors.gender && validation.touched.gender && (
                   <div className="invalid-feedback">

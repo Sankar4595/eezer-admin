@@ -26,7 +26,7 @@ import DeleteModal from "../../../Components/Common/DeleteModal";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
-import { Rating, Published, Price } from "./EcommerceProductCol";
+import { Rating, Published, Price, NewPrice } from "./EcommerceProductCol";
 //Import data
 //import { products } from "../../../common/data";
 
@@ -288,7 +288,7 @@ const EcommerceProducts = (props) => {
                   <div className="avatar-sm bg-light rounded p-1">
                     {product.row.original.images[0] && (
                       <img
-                        src={product.row.original.images[0].url}
+                        src={product.row.original.images[0]}
                         alt=""
                         className="img-fluid d-block"
                       />
@@ -298,7 +298,7 @@ const EcommerceProducts = (props) => {
                 <div className="flex-grow-1">
                   <h5 className="fs-14 mb-1">
                     <Link
-                      to={`/apps-ecommerce-product-details/${product.row.original.id}`}
+                      to={`/apps-ecommerce-product-details/${product.row.original._id}`}
                       className="text-body"
                     >
                       {" "}
@@ -308,8 +308,8 @@ const EcommerceProducts = (props) => {
                   <p className="text-muted mb-0">
                     Category:{" "}
                     <span className="fw-medium">
-                      {product.row.original.categoryArr
-                        ? JSON.parse(product.row.original.categoryArr).map(
+                      {product.row.original.category
+                        ? JSON.parse(product.row.original.category).map(
                             (val) => {
                               return val.label;
                             }
@@ -318,12 +318,10 @@ const EcommerceProducts = (props) => {
                     </span>{" "}
                     | Brand:{" "}
                     <span className="fw-medium">
-                      {product.row.original.brandArr
-                        ? JSON.parse(product.row.original.brandArr).map(
-                            (val) => {
-                              return val.label;
-                            }
-                          )
+                      {product.row.original.brand
+                        ? JSON.parse(product.row.original.brand).map((val) => {
+                            return val.label;
+                          })
                         : "Unbranded"}
                     </span>
                   </p>
@@ -337,6 +335,9 @@ const EcommerceProducts = (props) => {
         Header: "Quantity",
         accessor: "stock",
         filterable: true,
+        Cell: (product) => {
+          return <p>{product.row.original.quantity}</p>;
+        },
       },
       {
         Header: "Old price",
@@ -363,7 +364,7 @@ const EcommerceProducts = (props) => {
         accessor: "newPrice",
         filterable: true,
         Cell: (cellProps) => {
-          return <Price {...cellProps} />;
+          return <NewPrice {...cellProps} />;
         },
       },
       {

@@ -50,14 +50,14 @@ function changeLabelDetailInPlace(array, productDetails) {
     switch (index) {
       case 0: //price
         item.labelDetail = productDetails
-          ? productDetails.price + " / " + (productDetails.newPrice || "N/A")
+          ? productDetails.orginPrice + " / " + (productDetails.price || "N/A")
           : "N/A";
         break;
       case 1: // No. of Orders :
         item.labelDetail = productDetails ? productDetails.ordersCount : "N/A"; // Kiểm tra productDetails trước khi truy cập thuộc tính ordersCount
         break;
       case 2: // Available Stocks :
-        item.labelDetail = productDetails ? productDetails.stock : "N/A"; // Kiểm tra productDetails trước khi truy cập thuộc tính stock
+        item.labelDetail = productDetails ? productDetails.quantity : "N/A"; // Kiểm tra productDetails trước khi truy cập thuộc tính stock
         break;
       case 3: //Total Revenue :
         item.labelDetail = "New Value 3";
@@ -191,7 +191,7 @@ function EcommerceProductDetail(props) {
                           {productDetails.images.map((image, index) => (
                             <SwiperSlide key={index}>
                               <img
-                                src={image.url}
+                                src={image}
                                 alt=""
                                 className="img-fluid d-block"
                               />
@@ -215,7 +215,7 @@ function EcommerceProductDetail(props) {
                                 <SwiperSlide key={index} className="rounded">
                                   <div className="nav-slide-item">
                                     <img
-                                      src={image.url}
+                                      src={image}
                                       alt=""
                                       className="img-fluid d-block rounded"
                                     />
@@ -237,11 +237,9 @@ function EcommerceProductDetail(props) {
                           <div className="hstack gap-3 flex-wrap">
                             <div>
                               <Link to="#" className="text-primary d-block">
-                                {JSON.parse(productDetails.brandArr).map(
-                                  (val) => {
-                                    return val.label;
-                                  }
-                                )}
+                                {JSON.parse(productDetails.brand).map((val) => {
+                                  return val.label;
+                                })}
                               </Link>
                             </div>
                             {/* <div className="vr"></div>
@@ -608,17 +606,17 @@ function EcommerceProductDetail(props) {
                                       Category
                                     </th>
                                     <td>
-                                      {JSON.parse(
-                                        productDetails.categoryArr
-                                      ).map((val) => {
-                                        return val.label;
-                                      })}
+                                      {JSON.parse(productDetails.category).map(
+                                        (val) => {
+                                          return val.label;
+                                        }
+                                      )}
                                     </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">Brand</th>
                                     <td>
-                                      {JSON.parse(productDetails.brandArr).map(
+                                      {JSON.parse(productDetails.brand).map(
                                         (val) => {
                                           return val.label;
                                         }

@@ -43,10 +43,23 @@ const Published = (cell) => {
 };
 
 const Price = (cell) => {
-  const formattedPrice = parseFloat(cell.value).toLocaleString("we-VN", {
+  const formattedPrice = parseFloat(
+    cell.row.original.originPrice
+  ).toLocaleString("we-VN", {
     style: "currency",
     currency: "INR",
   });
   return <React.Fragment>{formattedPrice}</React.Fragment>;
 };
-export { Rating, Published, Price };
+
+const NewPrice = (cell) => {
+  const formattedPrice = parseFloat(cell.row.original.price).toLocaleString(
+    "we-VN",
+    {
+      style: "currency",
+      currency: "INR",
+    }
+  );
+  return <React.Fragment>{formattedPrice}</React.Fragment>;
+};
+export { Rating, Published, Price, NewPrice };
