@@ -115,18 +115,24 @@ const Navdata = () => {
         },
         {
           id: 5,
+          label: "SubCategory",
+          link: "/subcategory",
+          parentId: "appsecommerce",
+        },
+        {
+          id: 6,
           label: "Brand",
           link: "/brand",
           parentId: "appsecommerce",
         },
         {
-          id: 6,
+          id: 7,
           label: "Color",
           link: "/color",
           parentId: "appsecommerce",
         },
         {
-          id: 7,
+          id: 8,
           label: "Attribute",
           link: "/attribute",
           parentId: "appsecommerce",

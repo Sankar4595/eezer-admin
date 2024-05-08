@@ -25,7 +25,11 @@ const EcommerceCategory = (props) => {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showDangerAlert, setShowDangerAlert] = useState(false);
   const [isBottom, setIsBottom] = useState(false);
+  const [image, setImage] = useState(null);
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
   const toggleBottomCanvas = () => {
     setIsBottom(!isBottom);
   };
@@ -87,13 +91,15 @@ const EcommerceCategory = (props) => {
       handleAlert(false);
       return;
     }
-    const newCategory = {
-      name: name,
-    };
-    await dispatch(onAddNewCategory(newCategory));
+    const formData = new FormData();
+    formData.append("images", image);
+    formData.append("name", name);
+
+    await dispatch(onAddNewCategory(formData));
     await dispatch(onGetCategories());
     setName("");
     setActionTriggered(true);
+    setImage(null);
   };
 
   const handleDelete = async (row) => {
@@ -164,15 +170,39 @@ const EcommerceCategory = (props) => {
               <div id="customerList">
                 <Row className="g-4 mb-3">
                   <Col className="col-sm-auto">
-                    <div>
-                      <div className="input-group mb-3">
+                    <div style={{ display: "flex", gap: "25px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
+                        }}
+                      >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                        {image && (
+                          <div>
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt="Preview"
+                              style={{ maxWidth: "100px", maxHeight: "100px" }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        style={{ height: "50px" }}
+                        className="input-group mb-3"
+                      >
                         <input
                           type="text"
                           className="form-control"
                           placeholder="Add category..."
                           id="categoryNameInput"
                           value={name}
-                          onBlur={props.handleCategoryBlur}
                           onChange={(e) => setName(e.target.value)}
                         />
                         <button
@@ -181,21 +211,6 @@ const EcommerceCategory = (props) => {
                         >
                           + Add
                         </button>
-                        <Alert
-                          color="success"
-                          isOpen={showSuccessAlert}
-                          toggle={toggleSuccessAlert}
-                        >
-                          <strong>Successful manipulation!</strong>
-                        </Alert>
-                        <Alert
-                          color="danger"
-                          className="mb-0"
-                          isOpen={showDangerAlert}
-                          toggle={toggleDangerAlert}
-                        >
-                          <strong>An error occurred.</strong>
-                        </Alert>
                       </div>
                     </div>
                   </Col>

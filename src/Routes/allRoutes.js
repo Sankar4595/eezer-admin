@@ -19,6 +19,7 @@ import BrandComponent from "../pages/common/Brand";
 import AttributeComponent from "../pages/common/Attribute";
 import CategoriesComponent from "../pages/common/Category";
 import ColorComponent from "../pages/common/Color";
+import SubCategoryComponent from "../pages/common/subCategory";
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardEcommerce /> },
@@ -27,6 +28,7 @@ const authProtectedRoutes = [
   { path: "/brand", component: <BrandComponent /> },
   { path: "/attribute", component: <AttributeComponent /> },
   { path: "/category", component: <CategoriesComponent /> },
+  { path: "/subcategory", component: <SubCategoryComponent /> },
   { path: "/color", component: <ColorComponent /> },
   {
     path: "/apps-ecommerce-product-details/:_id",

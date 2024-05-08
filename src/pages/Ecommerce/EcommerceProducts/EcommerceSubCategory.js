@@ -15,13 +15,17 @@ import {
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import {
+  getCategories as onGetCategories,
   getSubCategory as onGetSubCategory,
   addNewSubCategory as onAddNewSubCategory,
   updateSubCategory as onUpdateSubCategory,
   deleteSubCategory as onDeleteSubCategory,
 } from "../../../slices/thunks";
+import { Select as AntSelect } from "antd";
 
 const EcommerceSubCategory = (props) => {
+  const { Option } = AntSelect;
+  const [code, setCode] = useState("");
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showDangerAlert, setShowDangerAlert] = useState(false);
   const [isBottom, setIsBottom] = useState(false);
@@ -57,15 +61,19 @@ const EcommerceSubCategory = (props) => {
     (ecom) => ({
       subcategories: ecom.subcategories,
       error: ecom.error,
+      categories: ecom.categories,
     })
   );
   // Inside your component
-  const { subcategories, error } = useSelector(ecomCategoriesProperties);
+  const { subcategories, categories, error } = useSelector(
+    ecomCategoriesProperties
+  );
   const [name, setName] = useState("");
   const [actionTriggered, setActionTriggered] = useState(false);
   useEffect(() => {
     if (!subcategories || subcategories.length === 0) {
       dispatch(onGetSubCategory());
+      dispatch(onGetCategories());
     }
   }, []);
 
@@ -89,11 +97,13 @@ const EcommerceSubCategory = (props) => {
     }
     const newCategory = {
       name: name,
+      category: code,
     };
     await dispatch(onAddNewSubCategory(newCategory));
     await dispatch(onGetSubCategory());
     setName("");
     setActionTriggered(true);
+    setCode("");
   };
 
   const handleDelete = async (row) => {
@@ -165,7 +175,26 @@ const EcommerceSubCategory = (props) => {
                 <Row className="g-4 mb-3">
                   <Col className="col-sm-auto">
                     <div>
-                      <div className="input-group mb-3">
+                      <div
+                        style={{ display: "flex", gap: "25px" }}
+                        className="input-group mb-3"
+                      >
+                        <AntSelect
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: "2px",
+                          }}
+                          placeholder="Add SubCategory Code"
+                          value={code}
+                          onChange={(e) => setCode(e)}
+                        >
+                          {categories?.map((val, idx) => (
+                            <Option key={idx} value={val._id}>
+                              {val.name}
+                            </Option>
+                          ))}
+                        </AntSelect>
                         <input
                           type="text"
                           className="form-control"

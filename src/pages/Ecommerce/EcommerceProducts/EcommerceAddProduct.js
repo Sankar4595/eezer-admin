@@ -88,7 +88,6 @@ const EcommerceAddProduct = (props) => {
       const foundProduct = products.find(
         (product) => product._id === productId._id
       );
-      console.log("foundProduct: ", foundProduct);
       if (foundProduct) {
         await setSelectedProduct(foundProduct);
         setIsEditMode(true);
@@ -139,8 +138,7 @@ const EcommerceAddProduct = (props) => {
             : foundProduct?.type
         );
         validation.setFieldValue("gender", foundProduct.gender);
-        setAttributeData(JSON.parse(foundProduct?.attribute));
-        setSizeAndVar(JSON.parse(foundProduct.variation));
+
         await setselectedFiles(foundProduct.images);
         validation.setFieldValue("images", selectedFiles);
         validation.setFieldValue(
@@ -155,7 +153,23 @@ const EcommerceAddProduct = (props) => {
             ? JSON.parse(foundProduct?.productVariation)
             : foundProduct?.productVariation
         );
-        setVariation(JSON.parse(foundProduct.productVariation));
+        setVariation(
+          foundProduct?.productVariation.length > 0
+            ? JSON.parse(foundProduct.productVariation)
+            : foundProduct.productVariation
+        );
+        setAttributeData(
+          foundProduct?.attribute.length > 0
+            ? JSON.parse(foundProduct?.attribute)
+            : foundProduct?.attribute
+        );
+        setSizeAndVar(
+          foundProduct?.variation.length > 0
+            ? JSON.parse(foundProduct.variation)
+            : foundProduct.variation
+        );
+      } else {
+        validation.resetForm();
       }
     };
 
@@ -508,7 +522,6 @@ const EcommerceAddProduct = (props) => {
     }
   }, [validation?.values?.attribute]);
 
-  console.log("variation: ", variation);
   const handleInputChange = (rowIndex, colIndex, value, field) => {
     setVariation((prevVariation) => {
       const updatedVariation = [...prevVariation];

@@ -76,7 +76,7 @@ export const getEvents = () => api.get(url.GET_EVENTS);
 
 export const getCategories = () => api.get(url.GET_CATEGORIES);
 export const addNewCategory = (category) =>
-  api.create(url.ADD_NEW_CATEGORY, category);
+  api.createFormData(url.ADD_NEW_CATEGORY, category);
 export const deleteCategory = (category) =>
   api.delete(url.DELETE_CATEGORY + "/" + category);
 // update Categories

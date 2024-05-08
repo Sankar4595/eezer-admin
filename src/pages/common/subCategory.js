@@ -5,52 +5,58 @@ import { Alert, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 import { createSelector } from "reselect";
 import {
   getCategories as onGetCategories,
-  addNewCategory as onAddNewCategory,
-  updateCategory as onUpdateCategory,
-  deleteCategory as onDeleteCategory,
+  getSubCategory as onGetSubCategory,
+  addNewSubCategory as onAddNewSubCategory,
+  updateSubCategory as onUpdateSubCategory,
+  deleteSubCategory as onDeleteSubCategory,
 } from "../../slices/thunks";
-import { message } from "antd";
-const CategoriesComponent = () => {
+import { Select, message } from "antd";
+const SubCategoryComponent = () => {
+  const { Option } = Select;
   const [editing, setEditing] = useState(null);
   const [editValue, setEditValue] = useState("");
-  const [image, setImage] = useState(null);
 
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-  };
   const dispatch = useDispatch();
   const selectLayoutState = (state) => state.Ecommerce;
   const ecomCategoriesProperties = createSelector(
     selectLayoutState,
     (ecom) => ({
-      categories: ecom.categories,
+      subcategories: ecom.subcategories,
       error: ecom.error,
       categories: ecom.categories,
     })
   );
-  // Inside your component
-  const { categories, error } = useSelector(ecomCategoriesProperties);
+  const { subcategories, categories, error } = useSelector(
+    ecomCategoriesProperties
+  );
+  console.log("categories: ", categories);
   const [name, setName] = useState("");
+  const [code, setCode] = useState("");
   useEffect(() => {
-    if (!categories || categories.length === 0) {
+    if (!subcategories || subcategories.length === 0) {
+      dispatch(onGetSubCategory());
       dispatch(onGetCategories());
     }
   }, []);
 
-  const addCategory = async () => {
-    const formData = new FormData();
-    formData.append("images", image);
-    formData.append("name", name);
-
-    let res = await dispatch(onAddNewCategory(formData));
+  const addSubCategory = async () => {
+    if (name.trim() === "") {
+      handleAlert(false);
+      return;
+    }
+    const newSubCategory = {
+      name: name,
+      category: code,
+    };
+    let res = await dispatch(onAddNewSubCategory(newSubCategory));
     if (res?.payload?.status) {
       message.success("Category Added");
     } else {
       message.error("Category with the same name already exists.");
     }
-    await dispatch(onGetCategories());
+    await dispatch(onGetSubCategory());
     setName("");
-    setImage(null);
+    setCode("");
   };
 
   const handleDelete = async (row) => {
@@ -62,11 +68,11 @@ const CategoriesComponent = () => {
     ) {
       return;
     }
-    await dispatch(onDeleteCategory(row._id));
+    await dispatch(onDeleteSubCategory(row._id));
   };
 
   const handleEdit = async (row) => {
-    await dispatch(onUpdateCategory(row));
+    await dispatch(onUpdateSubCategory(row));
     setEditing(null);
   };
   const handleEditDoubleClick = (e) => {
@@ -86,46 +92,45 @@ const CategoriesComponent = () => {
     <div style={{ paddingTop: "80px" }}>
       <Card style={{ height: "75vh", overflow: "auto" }}>
         <CardHeader>
-          <h4 className="card-title mb-0">New Categories</h4>
+          <h4 className="card-title mb-0">New SubCategory</h4>
         </CardHeader>
 
         <CardBody>
           <div id="customerList">
             <Row className="g-4 mb-3">
               <Col className="col-sm-auto">
-                <div style={{ display: "flex", gap: "25px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
-                    }}
-                  >
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                    {image && (
-                      <div>
-                        <img
-                          src={URL.createObjectURL(image)}
-                          alt="Preview"
-                          style={{ maxWidth: "100px", maxHeight: "100px" }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ height: "50px" }} className="input-group mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Add category..."
-                      id="categoryNameInput"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    <button className="btn btn-success" onClick={addCategory}>
+                <div>
+                  <div className="input-group mb-3">
+                    <div style={{ display: "flex", gap: "26px" }}>
+                      <Select
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: "2px",
+                        }}
+                        placeholder="Add SubCategory Code"
+                        value={code}
+                        onChange={(e) => setCode(e)}
+                      >
+                        {categories.map((val, idx) => (
+                          <Option key={idx} value={val._id}>
+                            {val.name}
+                          </Option>
+                        ))}
+                      </Select>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Add SubCategory..."
+                        id="SubCategoryNameInput"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      className="btn btn-success"
+                      onClick={addSubCategory}
+                    >
                       + Add
                     </button>
                   </div>
@@ -150,16 +155,13 @@ const CategoriesComponent = () => {
                         />
                       </div>
                     </th>
-                    <th className="sort" data-sort="category_image">
-                      Image
+                    <th className="sort" data-sort="SubCategory_name">
+                      SubCategory name
                     </th>
-                    <th className="sort" data-sort="category_name">
-                      Name list
-                    </th>
-                    <th className="sort" data-sort="category_created_at">
+                    <th className="sort" data-sort="SubCategory_created_at">
                       Date created
                     </th>
-                    <th className="sort" data-sort="category_updated_at">
+                    <th className="sort" data-sort="SubCategory_updated_at">
                       Modification date
                     </th>
                     <th className="sort" data-sort="action">
@@ -168,7 +170,7 @@ const CategoriesComponent = () => {
                   </tr>
                 </thead>
                 <tbody className="list form-check-all">
-                  {categories.map((row) => (
+                  {subcategories.map((row) => (
                     <tr key={row._id}>
                       <th scope="row">
                         <div className="form-check">
@@ -185,18 +187,7 @@ const CategoriesComponent = () => {
                           {row.name}
                         </Link>
                       </td>
-                      <td className="category_image">
-                        <img
-                          src={row.images}
-                          alt=""
-                          style={{
-                            maxWidth: "50px",
-                            maxHeight: "50px",
-                            borderRadius: "50%",
-                          }}
-                        />
-                      </td>
-                      <td className="category_name">
+                      <td className="SubCategory_name">
                         {editing === row._id ? (
                           <input
                             type="text"
@@ -214,8 +205,12 @@ const CategoriesComponent = () => {
                           </span>
                         )}
                       </td>
-                      <td className="category_created_at">{row.createDate}</td>
-                      <td className="category_updated_at">{row.modifyDate}</td>
+                      <td className="SubCategory_created_at">
+                        {row.createDate}
+                      </td>
+                      <td className="SubCategory_updated_at">
+                        {row.modifyDate}
+                      </td>
                       <td>
                         <div className="d-flex gap-2">
                           <div className="edit">
@@ -225,11 +220,11 @@ const CategoriesComponent = () => {
                                 data-bs-toggle="modal"
                                 data-bs-target="#showModal"
                                 onClick={() => {
-                                  const updatedCategory = {
+                                  const updatedSubCategory = {
                                     ...row,
                                     name: editValue,
                                   }; // Tạo bản sao và chỉnh sửa 'name'
-                                  handleEdit(updatedCategory);
+                                  handleEdit(updatedSubCategory);
                                 }}
                               >
                                 Edit
@@ -286,4 +281,4 @@ const CategoriesComponent = () => {
   );
 };
 
-export default CategoriesComponent;
+export default SubCategoryComponent;
