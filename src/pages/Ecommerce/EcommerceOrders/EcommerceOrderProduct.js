@@ -35,9 +35,9 @@ const EcommerceOrderProduct = (props) => {
           </div>
         </td>
         <td>
-          {parseFloat(props.item.price).toLocaleString("vi-VN", {
+          {parseFloat(props.item.price).toLocaleString("en-IN", {
             style: "currency",
-            currency: "VND",
+            currency: "INR",
           })}
         </td>
 
@@ -52,9 +52,9 @@ const EcommerceOrderProduct = (props) => {
           </div>
         </td>
         <td className="fw-medium text-end">
-          {(props.item.price * props.item.quantity).toLocaleString("vi-VN", {
+          {(props.item.price * props.item.quantity).toLocaleString("en-IN", {
             style: "currency",
-            currency: "VND",
+            currency: "INR",
           })}
         </td>
       </tr>

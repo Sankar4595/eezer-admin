@@ -53,7 +53,7 @@ const EcommerceOrderDetail = (props) => {
   return (
     <div className="page-content">
       <Container fluid>
-        <BreadCrumb title="Chi tiết đơn hàng" pageTitle="Thương mại điện tử" />
+        <BreadCrumb title="Order Details" pageTitle="E-commerce" />
 
         <Row>
           <Col xl={9}>
@@ -61,7 +61,7 @@ const EcommerceOrderDetail = (props) => {
               <CardHeader>
                 <div className="d-flex align-items-center">
                   <h5 className="card-title flex-grow-1 mb-0">
-                    {"Đơn hàng " + orderDetails._id}
+                    {"Order " + orderDetails._id}
                   </h5>
                   <div className="flex-shrink-0">
                     <Link
@@ -69,7 +69,7 @@ const EcommerceOrderDetail = (props) => {
                       className="btn btn-primary btn-sm"
                     >
                       <i className="ri-download-2-fill align-middle me-1"></i>{" "}
-                      Hóa đơn
+                      Bill{" "}
                     </Link>
                   </div>
                 </div>
@@ -79,12 +79,12 @@ const EcommerceOrderDetail = (props) => {
                   <table className="table table-nowrap align-middle table-borderless mb-0">
                     <thead className="table-light text-muted">
                       <tr>
-                        <th scope="col">Chi tiết sản phẩm</th>
-                        <th scope="col">Đơn giá</th>
-                        <th scope="col">Số lượng</th>
-                        <th scope="col">Đánh giá</th>
+                        <th scope="col">Product details</th>
+                        <th scope="col">Unit price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Evaluation</th>
                         <th scope="col" className="text-end">
-                          Thành tiền
+                          into money
                         </th>
                       </tr>
                     </thead>
@@ -103,13 +103,13 @@ const EcommerceOrderDetail = (props) => {
                               <tbody>
                                 <tr>
                                   <td>
-                                    Tổng :{" "}
+                                    Total :{" "}
                                     {orderDetails.totalItem &&
                                       orderDetails.totalItem.toLocaleString(
-                                        "vi-VN",
+                                        "en-IN",
                                         {
                                           style: "currency",
-                                          currency: "VND",
+                                          currency: "INR",
                                         }
                                       )}
                                   </td>
@@ -117,7 +117,7 @@ const EcommerceOrderDetail = (props) => {
                                 </tr>
                                 <tr>
                                   <td>
-                                    Giảm giá{" "}
+                                    Discount{" "}
                                     <span className="text-muted">
                                       (Eezer15)
                                     </span>{" "}
@@ -127,31 +127,31 @@ const EcommerceOrderDetail = (props) => {
                                 </tr>
                                 <tr>
                                   <td>
-                                    Phí ship :{" "}
+                                    Shipping fee :{" "}
                                     {orderDetails.shippingCost &&
                                       orderDetails.shippingCost.toLocaleString(
-                                        "vi-VN",
+                                        "en-IN",
                                         {
                                           style: "currency",
-                                          currency: "VND",
+                                          currency: "INR",
                                         }
                                       )}
                                   </td>
                                   <td className="text-end"></td>
                                 </tr>
                                 <tr>
-                                  <td>Thuế: {orderDetails.taxFee}%</td>
+                                  <td>Tax: {orderDetails.taxFee}%</td>
                                   <td className="text-end"></td>
                                 </tr>
                                 <tr className="border-top border-top-dashed">
                                   <th scope="row">
-                                    Tổng giá trị đơn hàng:{" "}
+                                    Total order value:{" "}
                                     {orderDetails.total &&
                                       orderDetails.total.toLocaleString(
-                                        "vi-VN",
+                                        "en-IN",
                                         {
                                           style: "currency",
-                                          currency: "VND",
+                                          currency: "INR",
                                         }
                                       )}
                                   </th>
@@ -171,23 +171,21 @@ const EcommerceOrderDetail = (props) => {
             <Card>
               <CardHeader>
                 <div className="d-sm-flex align-items-center">
-                  <h5 className="card-title flex-grow-1 mb-0">
-                    Trạng thái đơn hàng
-                  </h5>
+                  <h5 className="card-title flex-grow-1 mb-0">Order status</h5>
                   <div className="flex-shrink-0 mt-2 mt-sm-0">
                     <Link
                       to="#"
                       className="btn btn-soft-primary btn-sm mt-2 mt-sm-0"
                     >
-                      <i className="ri-map-pin-line align-middle me-1"></i> Thay
-                      đổi địa chỉ
+                      <i className="ri-map-pin-line align-middle me-1"></i>
+                      Replace change address
                     </Link>{" "}
                     <Link
                       to="#"
                       className="btn btn-soft-secondary btn-sm mt-2 mt-sm-0"
                     >
                       <i className="mdi mdi-archive-remove-outline align-middle me-1"></i>{" "}
-                      Hủy đơn hàng
+                      Cancel order
                     </Link>
                   </div>
                 </div>
@@ -220,7 +218,7 @@ const EcommerceOrderDetail = (props) => {
                             </div>
                             <div className="flex-grow-1 ms-3">
                               <h6 className="fs-15 mb-0 fw-semibold">
-                                Đã đặt hàng -{" "}
+                                Ordered -{" "}
                                 <span className="fw-normal">
                                   {orderDetails.createDate}
                                 </span>
@@ -235,13 +233,13 @@ const EcommerceOrderDetail = (props) => {
                         isOpen={col1}
                       >
                         <div className="accordion-body ms-2 ps-5 pt-0">
-                          <h6 className="mb-1">Đơn hàng đã được đặt</h6>
+                          <h6 className="mb-1">Order has been placed</h6>
                           <p className="text-muted">
                             {orderDetails.createDate}
                           </p>
 
                           <h6 className="mb-1">
-                            Nhân viên nhận đơn và chuẩn bị hàng
+                            Staff takes orders and prepares goods
                           </h6>
                           <p className="text-muted mb-0">
                             {orderDetails.modifyDate}
@@ -272,7 +270,7 @@ const EcommerceOrderDetail = (props) => {
                             </div>
                             <div className="flex-grow-1 ms-3">
                               <h6 className="fs-15 mb-1 fw-semibold">
-                                Đã đóng gói -{" "}
+                                Packed -{" "}
                                 <span className="fw-normal">
                                   {orderDetails.modifyDate}
                                 </span>
@@ -288,9 +286,9 @@ const EcommerceOrderDetail = (props) => {
                       >
                         <div className="accordion-body ms-2 ps-5 pt-0">
                           <h6 className="mb-1">
-                            Đơn hàng đã được gửi cho công ty chuyển phát
+                            The order has been sent to the delivery company
                           </h6>
-                          <p className="text-muted mb-0">Đang cập nhật</p>
+                          <p className="text-muted mb-0">Updating</p>
                         </div>
                       </Collapse>
                     </div>
@@ -317,8 +315,8 @@ const EcommerceOrderDetail = (props) => {
                             </div>
                             <div className="flex-grow-1 ms-3">
                               <h6 className="fs-15 mb-1 fw-semibold">
-                                Đang giao -{" "}
-                                <span className="fw-normal">Đang cập nhật</span>
+                                Delivering -{" "}
+                                <span className="fw-normal">Updating</span>
                               </h6>
                             </div>
                           </div>
@@ -330,11 +328,11 @@ const EcommerceOrderDetail = (props) => {
                         isOpen={col3}
                       >
                         <div className="accordion-body ms-2 ps-5 pt-0">
-                          <h6 className="fs-14">Đang cập nhật</h6>
+                          <h6 className="fs-14">Updating</h6>
                           <h6 className="mb-1">
-                            Đơn hàng đang được giao đến người nhận
+                            The order is being delivered to the recipient
                           </h6>
-                          <p className="text-muted mb-0">Đang cập nhật</p>
+                          <p className="text-muted mb-0">Updating</p>
                         </div>
                       </Collapse>
                     </div>
@@ -352,7 +350,7 @@ const EcommerceOrderDetail = (props) => {
                             </div>
                             <div className="flex-grow-1 ms-3">
                               <h6 className="fs-14 mb-0 fw-semibold">
-                                Trên đường vận chuyển
+                                On the way of transportation
                               </h6>
                             </div>
                           </div>
@@ -373,7 +371,7 @@ const EcommerceOrderDetail = (props) => {
                             </div>
                             <div className="flex-grow-1 ms-3">
                               <h6 className="fs-14 mb-0 fw-semibold">
-                                Đã giao hàng
+                                Delivered{" "}
                               </h6>
                             </div>
                           </div>
@@ -392,14 +390,14 @@ const EcommerceOrderDetail = (props) => {
                 <div className="d-flex">
                   <h5 className="card-title flex-grow-1 mb-0">
                     <i className="mdi mdi-truck-fast-outline align-middle me-1 text-muted"></i>
-                    Thông tin đơn vị vận chuyển
+                    Shipping unit information
                   </h5>
                   <div className="flex-shrink-0">
                     <Link
                       to="#"
                       className="badge bg-primary-subtle text-primary fs-11"
                     >
-                      Theo dõi đơn hàng
+                      Order tracking
                     </Link>
                   </div>
                 </div>
@@ -417,7 +415,7 @@ const EcommerceOrderDetail = (props) => {
                     {"#ID: " + orderDetails._id}
                   </p>
                   <p className="text-muted mb-0">
-                    {"Phương thức thanh toán:" + orderDetails.paymentMethod}
+                    {"Payment methods:" + orderDetails.paymentMethod}
                   </p>
                 </div>
               </CardBody>
@@ -427,11 +425,11 @@ const EcommerceOrderDetail = (props) => {
               <CardHeader>
                 <div className="d-flex">
                   <h5 className="card-title flex-grow-1 mb-0">
-                    Thông tin người nhận
+                    Receiver's information
                   </h5>
                   <div className="flex-shrink-0">
                     <Link to="#" className="link-secondary">
-                      Xem hồ sơ
+                      View profile
                     </Link>
                   </div>
                 </div>
@@ -450,12 +448,12 @@ const EcommerceOrderDetail = (props) => {
                       <div className="flex-grow-1 ms-3">
                         <h6 className="fs-14 mb-1">
                           {orderDetails.name
-                            ? orderDetails.name + "(Vãng lai)"
+                            ? orderDetails.name + "(Haunt)"
                             : orderDetails.user
-                            ? orderDetails.user.name + "(Thành viên)"
+                            ? orderDetails.user.name + "(Member)"
                             : ""}
                         </h6>
-                        <p className="text-muted mb-0">Khách hàng</p>
+                        <p className="text-muted mb-0">Client</p>
                       </div>
                     </div>
                   </li>
@@ -493,13 +491,13 @@ const EcommerceOrderDetail = (props) => {
               <CardHeader>
                 <h5 className="card-title mb-0">
                   <i className="ri-map-pin-line align-middle me-1 text-muted"></i>{" "}
-                  Địa chỉ giao hàng
+                  Delivery address
                 </h5>
               </CardHeader>
               <CardBody>
                 <ul className="list-unstyled vstack gap-2 fs-13 mb-0">
                   <li className="fw-medium fs-14">
-                    <span style={{ fontWeight: "bold" }}>Địa chỉ:</span>{" "}
+                    <span style={{ fontWeight: "bold" }}>Address:</span>{" "}
                     {shippingAddress}
                   </li>
                 </ul>
@@ -510,13 +508,13 @@ const EcommerceOrderDetail = (props) => {
               <CardHeader>
                 <h5 className="card-title mb-0">
                   <i className="ri-secure-payment-line align-bottom me-1 text-muted"></i>{" "}
-                  Thông tin thanh toán
+                  Billing Information
                 </h5>
               </CardHeader>
               <CardBody>
                 <div className="d-flex align-items-center mb-2">
                   <div className="flex-shrink-0">
-                    <p className="text-muted mb-0">Mã đơn hàng:</p>
+                    <p className="text-muted mb-0">Code orders :</p>
                   </div>
                   <div className="flex-grow-1 ms-2">
                     <h6 className="mb-0">{orderDetails._id}</h6>
@@ -524,7 +522,7 @@ const EcommerceOrderDetail = (props) => {
                 </div>
                 <div className="d-flex align-items-center mb-2">
                   <div className="flex-shrink-0">
-                    <p className="text-muted mb-0">Phương thức thanh toán:</p>
+                    <p className="text-muted mb-0">Payment methods:</p>
                   </div>
                   <div className="flex-grow-1 ms-2">
                     <h6 className="mb-0">{orderDetails.paymentMethod}</h6>
@@ -532,15 +530,15 @@ const EcommerceOrderDetail = (props) => {
                 </div>
                 <div className="d-flex align-items-center">
                   <div className="flex-shrink-0">
-                    <p className="text-muted mb-0">Tổng giá trị đơn hàng:</p>
+                    <p className="text-muted mb-0">Total order value :</p>
                   </div>
                   <div className="flex-grow-1 ms-2">
                     <h6 className="mb-0">
                       {" "}
                       {orderDetails.total &&
-                        orderDetails.total.toLocaleString("vi-VN", {
+                        orderDetails.total.toLocaleString("en-IN", {
                           style: "currency",
-                          currency: "VND",
+                          currency: "INR",
                         })}
                     </h6>
                   </div>
