@@ -148,12 +148,7 @@ const EcommerceAddProduct = (props) => {
             ? JSON.parse(foundProduct?.attribute)
             : foundProduct?.attribute
         );
-        validation.setFieldValue(
-          "productVariation",
-          foundProduct?.productVariation.length > 0
-            ? JSON.parse(foundProduct?.productVariation)
-            : foundProduct?.productVariation
-        );
+
         setVariation(
           foundProduct?.productVariation.length > 0
             ? JSON.parse(foundProduct.productVariation)
@@ -419,7 +414,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("brand", JSON.stringify(values.brand));
       newProduct.append("category", JSON.stringify(values.category));
       newProduct.append("color", JSON.stringify(values.color));
-      newProduct.append("attribute", JSON.stringify(attributeData));
+      newProduct.append("attribute", JSON.stringify(values.attribute));
       newProduct.append("type", JSON.stringify(values.type));
       newProduct.append("variation", JSON.stringify(sizeAndVar));
       newProduct.append("gender", values.gender);
@@ -564,6 +559,7 @@ const EcommerceAddProduct = (props) => {
     }
   }, [attributeData, validation.values.color]);
 
+  console.log("variation: ", variation);
   const renderRows = () => {
     return variation?.map((combination, rowIndex) => (
       <tr key={`row-${rowIndex}`}>
