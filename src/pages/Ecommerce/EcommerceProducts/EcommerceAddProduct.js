@@ -65,6 +65,7 @@ const EcommerceAddProduct = (props) => {
       setcustomActiveTab(tab);
     }
   };
+  const [image, setImage] = useState(null);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [variation, setVariation] = useState([]);
   const [sizeAndVar, setSizeAndVar] = useState([]);
@@ -503,13 +504,22 @@ const EcommerceAddProduct = (props) => {
       }
       const color = item[1]?.label;
       const colorCode = item[1]?.data[0]?.label;
+      const sku = item[1]?.SKU;
+      const oldPrice = item[1]?.oldPrice;
+      const newPrice = item[1]?.NewPrice;
+      const quantity = item[1]?.QTY;
+      const images = item[1]?.images;
 
       variation.push({
         color: color,
         colorCode: colorCode,
         colorImage: `/images/product/color/yellow.png`,
-        image: `/images/product/fashion/3-3.png`,
+        image: images,
         size: size,
+        sku: sku,
+        oldPrice: oldPrice,
+        price: newPrice,
+        quantity: quantity,
       });
     });
     return variation;
@@ -520,7 +530,8 @@ const EcommerceAddProduct = (props) => {
       let r = convertDataToFormat(variation);
       setSizeAndVar(r);
     }
-  }, [validation?.values?.attribute]);
+  }, [variation]);
+  console.log("variation: ", sizeAndVar);
 
   const handleInputChange = (rowIndex, colIndex, value, field) => {
     setVariation((prevVariation) => {
@@ -587,7 +598,7 @@ const EcommerceAddProduct = (props) => {
                         "oldPrice"
                       )
                     }
-                    type="text"
+                    type="number"
                     placeholder="Old Price"
                   />
                 </td>
@@ -602,7 +613,7 @@ const EcommerceAddProduct = (props) => {
                         "NewPrice"
                       )
                     }
-                    type="text"
+                    type="number"
                     placeholder="New Price"
                   />
                 </td>
@@ -621,6 +632,31 @@ const EcommerceAddProduct = (props) => {
                     placeholder="Qty"
                   />
                 </td>
+                {/* <td>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      {
+                        handleInputChange(
+                          rowIndex,
+                          colIndex,
+                          e.target.files[0],
+                          "images"
+                        );
+                      }
+                    }}
+                  />
+                  {variation.images && (
+                    <div>
+                      <img
+                        src={URL.createObjectURL(variation.images)}
+                        alt="Preview"
+                        style={{ maxWidth: "100px", maxHeight: "100px" }}
+                      />
+                    </div>
+                  )}
+                </td> */}
               </>
             )}
           </React.Fragment>

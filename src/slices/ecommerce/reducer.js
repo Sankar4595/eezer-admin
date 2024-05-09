@@ -417,7 +417,7 @@ const EcommerceSlice = createSlice({
     });
 
     builder.addCase(updateSubCategory.fulfilled, (state, action) => {
-      state.subcategories = state.SubCategory.map((brand) =>
+      state.subcategories = state.subcategories.map((brand) =>
         brand._id.toString() === action.payload.data._id.toString()
           ? { ...brand, ...action.payload.data }
           : brand
@@ -430,7 +430,7 @@ const EcommerceSlice = createSlice({
     });
 
     builder.addCase(deleteSubCategory.fulfilled, (state, action) => {
-      state.subcategories = state.SubCategory.filter(
+      state.subcategories = state.subcategories.filter(
         (brand) => brand._id.toString() !== action.payload.brand.toString()
       ); // Xóa thương hiệu khỏi danh sách thương hiệu
       state.error = null;
