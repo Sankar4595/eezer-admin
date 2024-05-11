@@ -88,6 +88,7 @@ const EcommerceAddProduct = (props) => {
     (product) => product._id === productId._id
   );
 
+  console.log("foundProduct: ", foundProduct);
   useEffect(() => {
     const fetchData = async () => {
       if (foundProduct) {
@@ -96,7 +97,10 @@ const EcommerceAddProduct = (props) => {
         validation.setFieldValue("name", foundProduct.name);
         validation.setFieldValue("description", foundProduct.description);
         validation.setFieldValue("specification", foundProduct.specification);
-        validation.setFieldValue("originPrice", foundProduct.originPrice);
+        validation.setFieldValue(
+          "originPrice",
+          parseInt(foundProduct.originPrice)
+        );
         validation.setFieldValue("quantity", foundProduct.quantity);
         validation.setFieldValue("discount", foundProduct.discount);
         const isPublishOption = IsPublishOptions[0].options.find(
@@ -129,9 +133,12 @@ const EcommerceAddProduct = (props) => {
           "discountenddate",
           foundProduct.discountenddate
         );
-        validation.setFieldValue("cgst", foundProduct.cgst);
-        validation.setFieldValue("sgst", foundProduct.sgst);
-        validation.setFieldValue("shippingdays", foundProduct.shippingdays);
+        validation.setFieldValue("cgst", parseInt(foundProduct.cgst));
+        validation.setFieldValue("sgst", parseInt(foundProduct.sgst));
+        validation.setFieldValue(
+          "shippingdays",
+          parseInt(foundProduct.shippingdays)
+        );
         validation.setFieldValue("cod", foundProduct.cod);
         validation.setFieldValue(
           "type",
@@ -151,9 +158,9 @@ const EcommerceAddProduct = (props) => {
         );
 
         setAttributeData(
-          foundProduct?.attribute.length > 0
-            ? JSON.parse(foundProduct?.attribute)
-            : foundProduct?.attribute
+          foundProduct?.attributeData.length > 0
+            ? JSON.parse(foundProduct?.attributeData)
+            : foundProduct?.attributeData
         );
         setSizeAndVar(
           foundProduct?.variation.length > 0
@@ -411,6 +418,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("category", JSON.stringify(values.category));
       newProduct.append("color", JSON.stringify(values.color));
       newProduct.append("attribute", JSON.stringify(values.attribute));
+      newProduct.append("attributeData", JSON.stringify(attributeData));
       newProduct.append("type", JSON.stringify(values.type));
       newProduct.append("variation", JSON.stringify(sizeAndVar));
       newProduct.append("gender", values.gender);
@@ -449,6 +457,7 @@ const EcommerceAddProduct = (props) => {
   }, [validation.values.description, validation.values.specification]);
 
   const handleAttributeDataChange = (e, value) => {
+    console.log("value: ", value);
     setAttributeData((prev) => {
       const index = prev.findIndex((item) => item.value === value.value);
       if (index !== -1) {
@@ -551,12 +560,9 @@ const EcommerceAddProduct = (props) => {
     data: validation.values.color,
   };
   console.log("variation: ", variation);
+  console.log("validation.values.color: ", validation.values.color);
   useEffect(() => {
-    if (
-      attributeData.length > 0 ||
-      validation.values.color.length > 0 ||
-      productId.length === 0
-    ) {
+    if (attributeData.length > 0 || validation.values.color.length > 0) {
       const generatedVariations = generateCombinations([
         ...attributeData,
         resultColor,
@@ -564,6 +570,7 @@ const EcommerceAddProduct = (props) => {
       setVariation(generatedVariations);
     }
   }, [attributeData, validation.values.color]);
+  console.log("attributeData: ", attributeData);
 
   useEffect(() => {
     if (productId._id !== undefined && attributeData.length > 0) {
@@ -674,6 +681,11 @@ const EcommerceAddProduct = (props) => {
         ))}
       </tr>
     ));
+  };
+
+  let selectCod = {
+    label: validation.values.cod,
+    value: validation.values.cod,
   };
   return (
     <div className="page-content">
@@ -1044,7 +1056,7 @@ const EcommerceAddProduct = (props) => {
                         <div className="mb-3">
                           <label className="form-label">Cash on Delivery</label>
                           <Select
-                            // value={validation.values.cod || ""}
+                            value={selectCod}
                             onChange={(selectedOption) =>
                               validation.handleChange("cod")(
                                 selectedOption.value
