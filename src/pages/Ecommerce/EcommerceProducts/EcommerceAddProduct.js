@@ -84,12 +84,12 @@ const EcommerceAddProduct = (props) => {
   const editorDesRef = useRef(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const editorSpecRef = useRef(null);
+  const foundProduct = products.find(
+    (product) => product._id === productId._id
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-      const foundProduct = products.find(
-        (product) => product._id === productId._id
-      );
       if (foundProduct) {
         await setSelectedProduct(foundProduct);
         setIsEditMode(true);
@@ -150,11 +150,6 @@ const EcommerceAddProduct = (props) => {
             : foundProduct?.attribute
         );
 
-        setVariation(
-          foundProduct?.productVariation.length > 0
-            ? JSON.parse(foundProduct.productVariation)
-            : foundProduct.productVariation
-        );
         setAttributeData(
           foundProduct?.attribute.length > 0
             ? JSON.parse(foundProduct?.attribute)
@@ -527,7 +522,6 @@ const EcommerceAddProduct = (props) => {
       setSizeAndVar(r);
     }
   }, [variation]);
-  console.log("variation: ", sizeAndVar);
 
   const handleInputChange = async (rowIndex, colIndex, value, field) => {
     let result;
@@ -556,6 +550,7 @@ const EcommerceAddProduct = (props) => {
     value: "color",
     data: validation.values.color,
   };
+  console.log("variation: ", variation);
   useEffect(() => {
     if (
       attributeData.length > 0 ||
@@ -570,17 +565,27 @@ const EcommerceAddProduct = (props) => {
     }
   }, [attributeData, validation.values.color]);
 
+  useEffect(() => {
+    if (productId._id !== undefined && attributeData.length > 0) {
+      setVariation(
+        foundProduct?.productVariation.length > 0
+          ? JSON.parse(foundProduct.productVariation)
+          : foundProduct.productVariation
+      );
+    }
+  }, [attributeData]);
+
   const renderRows = () => {
     return variation?.map((combination, rowIndex) => (
       <tr key={`row-${rowIndex}`}>
-        {combination.map((variation, colIndex) => (
+        {combination.map((item, colIndex) => (
           <React.Fragment key={`col-${colIndex}`}>
-            <td>{variation.label}</td>
+            <td>{item.label}</td>
             {colIndex === combination.length - 1 && (
               <>
                 <td>
                   <Input
-                    value={variation?.SKU || ""}
+                    value={item?.SKU || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
@@ -595,7 +600,7 @@ const EcommerceAddProduct = (props) => {
                 </td>
                 <td>
                   <Input
-                    value={variation?.oldPrice || ""}
+                    value={item?.oldPrice || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
@@ -610,7 +615,7 @@ const EcommerceAddProduct = (props) => {
                 </td>
                 <td>
                   <Input
-                    value={variation?.NewPrice || ""}
+                    value={item?.NewPrice || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
@@ -625,7 +630,7 @@ const EcommerceAddProduct = (props) => {
                 </td>
                 <td>
                   <Input
-                    value={variation?.QTY || ""}
+                    value={item?.QTY || ""}
                     onChange={(e) =>
                       handleInputChange(
                         rowIndex,
@@ -653,10 +658,10 @@ const EcommerceAddProduct = (props) => {
                       }
                     }}
                   />
-                  {variation.images && (
+                  {item.images && (
                     <div>
                       <img
-                        src={variation.images}
+                        src={item.images}
                         alt="Preview"
                         style={{ maxWidth: "100px", maxHeight: "100px" }}
                       />
