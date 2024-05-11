@@ -18,6 +18,7 @@ import {
   deleteCustomer as deleteCustomerApi,
   addNewProduct as addNewProductApi,
   updateProduct as updateProductApi,
+  uploadImage as uploadImageApi,
   getBrands as getBrandsApi,
   getColors as getColorsApi,
   getCategories as getCategoriesApi,
@@ -39,6 +40,10 @@ import {
   updateAttribute as updateAttributeApi,
   deleteAttribute as deleteAttributeApi,
 } from "../../helpers/fakebackend_helper";
+import { api } from "../../config";
+import axios from "axios";
+
+axios.defaults.baseURL = api.API_URL;
 
 export const getProducts = createAsyncThunk(
   "ecommerce/getProducts",
@@ -163,6 +168,21 @@ export const updateProduct = createAsyncThunk(
       return data;
     } catch (error) {
       toast.error("Product Updateded Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const UploadImage = createAsyncThunk(
+  "ecommerce/UploadImage",
+  async (product) => {
+    try {
+      const response = uploadImageApi(product);
+      const data = await response;
+      toast.success("Product UploadImage Successfully", { autoClose: 3000 });
+      return data;
+    } catch (error) {
+      toast.error("Product UploadImage Failed", { autoClose: 3000 });
       throw error;
     }
   }

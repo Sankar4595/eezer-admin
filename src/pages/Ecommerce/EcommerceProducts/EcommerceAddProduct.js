@@ -23,6 +23,7 @@ import {
   getProducts as onGetProducts,
   addNewProduct as onAddNewProduct,
   updateProduct as onUpdateProduct,
+  UploadImage as onUploadImage,
 } from "../../../slices/thunks";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -528,14 +529,24 @@ const EcommerceAddProduct = (props) => {
   }, [variation]);
   console.log("variation: ", sizeAndVar);
 
-  const handleInputChange = (rowIndex, colIndex, value, field) => {
+  const handleInputChange = async (rowIndex, colIndex, value, field) => {
+    let result;
+    if (field === "images") {
+      const formData = new FormData();
+      formData.append("images", value);
+      result = await dispatch(onUploadImage(formData));
+    }
     setVariation((prevVariation) => {
       const updatedVariation = [...prevVariation];
       updatedVariation[rowIndex] = [...updatedVariation[rowIndex]];
       updatedVariation[rowIndex][colIndex] = {
         ...updatedVariation[rowIndex][colIndex],
       };
-      updatedVariation[rowIndex][colIndex][field] = value;
+      if (result.payload.image) {
+        updatedVariation[rowIndex][colIndex][field] = result.payload.image;
+      } else {
+        updatedVariation[rowIndex][colIndex][field] = value;
+      }
       return updatedVariation;
     });
   };
@@ -628,7 +639,7 @@ const EcommerceAddProduct = (props) => {
                     placeholder="Qty"
                   />
                 </td>
-                {/* <td>
+                <td>
                   <input
                     type="file"
                     accept="image/*"
@@ -646,13 +657,13 @@ const EcommerceAddProduct = (props) => {
                   {variation.images && (
                     <div>
                       <img
-                        src={URL.createObjectURL(variation.images)}
+                        src={variation.images}
                         alt="Preview"
                         style={{ maxWidth: "100px", maxHeight: "100px" }}
                       />
                     </div>
                   )}
-                </td> */}
+                </td>
               </>
             )}
           </React.Fragment>
@@ -978,7 +989,7 @@ const EcommerceAddProduct = (props) => {
                         <th>Old Price</th>
                         <th>New Price</th>
                         <th>Qty</th>
-                        {/* <th>Image Upload</th> */}
+                        <th>Image Upload</th>
                       </tr>
                     </thead>
                     <tbody>{renderRows()}</tbody>

@@ -38,6 +38,7 @@ export const GET_PRODUCT_BY_ID = "/apps/product";
 export const DELETE_PRODUCT = "/apps/product";
 export const ADD_NEW_PRODUCT = "/apps/product";
 export const UPDATE_PRODUCT = "/apps/product";
+export const UPLOAD_IMAGE = "/apps/product/uploadImage";
 
 // Category
 export const GET_CATEGORIES = "apps/category";

@@ -174,6 +174,9 @@ export const addNewProduct = (product) =>
 export const updateProduct = (product) =>
   api.patchFormData(url.UPDATE_PRODUCT + "/" + product.get("id"), product);
 
+export const uploadImage = (product) =>
+  api.createFormData(url.UPLOAD_IMAGE, product);
+
 // get Orders
 export const getOrders = () => api.get(url.GET_ORDERS);
 // get Orders ID
