@@ -542,8 +542,8 @@ const EcommerceAddProduct = (props) => {
       updatedVariation[rowIndex][colIndex] = {
         ...updatedVariation[rowIndex][colIndex],
       };
-      if (result.payload.image) {
-        updatedVariation[rowIndex][colIndex][field] = result.payload.image;
+      if (field === "images") {
+        updatedVariation[rowIndex][colIndex][field] = result?.payload?.image;
       } else {
         updatedVariation[rowIndex][colIndex][field] = value;
       }
@@ -570,7 +570,6 @@ const EcommerceAddProduct = (props) => {
     }
   }, [attributeData, validation.values.color]);
 
-  console.log("variation: ", variation);
   const renderRows = () => {
     return variation?.map((combination, rowIndex) => (
       <tr key={`row-${rowIndex}`}>
@@ -1001,6 +1000,7 @@ const EcommerceAddProduct = (props) => {
                   customActiveTab={customActiveTab}
                   toggleCustom={toggleCustom}
                   validation={validation}
+                  variation={sizeAndVar}
                 />
                 <Card>
                   <CardHeader>

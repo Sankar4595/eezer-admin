@@ -179,10 +179,10 @@ export const UploadImage = createAsyncThunk(
     try {
       const response = uploadImageApi(product);
       const data = await response;
-      toast.success("Product UploadImage Successfully", { autoClose: 3000 });
+      toast.success("Product UploadImage Successfully");
       return data;
     } catch (error) {
-      toast.error("Product UploadImage Failed", { autoClose: 3000 });
+      toast.error("Product UploadImage Failed");
       throw error;
     }
   }

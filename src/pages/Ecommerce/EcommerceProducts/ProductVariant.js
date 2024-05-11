@@ -13,7 +13,12 @@ import {
 import classnames from "classnames";
 import { Input as InputNew, Select } from "antd";
 
-const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
+const ProductVariant = ({
+  customActiveTab,
+  toggleCustom,
+  validation,
+  variation,
+}) => {
   const [gst, setGst] = useState("include");
 
   let formattedPrice;
@@ -53,6 +58,16 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
         : validation.values.originPrice) + r;
   }
 
+  function getTotalQuantity(data) {
+    let totalQty = 0;
+    data.forEach((item) => {
+      totalQty += parseInt(item.quantity);
+    });
+    return totalQty;
+  }
+
+  const totalQty = getTotalQuantity(variation);
+
   useEffect(() => {
     if (validation.values.price > validation.values.originPrice) {
       setGst("exclude");
@@ -62,7 +77,10 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
     if (normalPrice) {
       validation.setFieldValue("price", normalPrice.toFixed());
     }
-  }, [validation.values.price, normalPrice]);
+    if (totalQty) {
+      validation.setFieldValue("quantity", totalQty);
+    }
+  }, [validation.values.price, normalPrice, totalQty]);
 
   const { Option } = Select;
   const selectAfter = (
@@ -176,18 +194,10 @@ const ProductVariant = ({ customActiveTab, toggleCustom, validation }) => {
                 <Input
                   type="text"
                   placeholder="Enter the warehouse quantity"
-                  value={validation.values.quantity || ""}
-                  onChange={validation.handleChange}
-                  invalid={
-                    validation.errors.quantity && validation.touched.quantity
-                  }
+                  value={validation.values.quantity || totalQty}
+                  disabled
                   name="quantity"
                 />
-                {validation.errors.quantity && validation.touched.quantity && (
-                  <div className="invalid-feedback">
-                    {validation.errors.quantity}
-                  </div>
-                )}
               </div>
             </Col>
             <Col sm={6}>
