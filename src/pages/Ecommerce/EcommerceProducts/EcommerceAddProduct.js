@@ -107,25 +107,10 @@ const EcommerceAddProduct = (props) => {
           (option) => option.value === foundProduct.isPublish
         );
         validation.setFieldValue("isPublish", isPublishOption);
-        validation.setFieldValue(
-          "brand",
-          foundProduct.brand.length > 0
-            ? JSON.parse(foundProduct.brand)
-            : foundProduct.brand
-        );
-        validation.setFieldValue(
-          "color",
-          foundProduct.color.length > 0
-            ? JSON.parse(foundProduct?.color)
-            : foundProduct.color
-        );
+        validation.setFieldValue("brand", foundProduct.brand);
+        validation.setFieldValue("color", foundProduct.color);
 
-        validation.setFieldValue(
-          "category",
-          foundProduct.category.length > 0
-            ? JSON.parse(foundProduct.category)
-            : foundProduct.category
-        );
+        validation.setFieldValue("category", foundProduct.category);
 
         validation.setFieldValue("video", foundProduct.video);
         validation.setFieldValue("weight", foundProduct.weight);
@@ -140,33 +125,15 @@ const EcommerceAddProduct = (props) => {
           parseInt(foundProduct.shippingdays)
         );
         validation.setFieldValue("cod", foundProduct.cod);
-        validation.setFieldValue(
-          "type",
-          foundProduct?.type.length > 0
-            ? JSON.parse(foundProduct?.type)
-            : foundProduct?.type
-        );
+        validation.setFieldValue("type", foundProduct?.type);
         validation.setFieldValue("gender", foundProduct.gender);
 
         await setselectedFiles(foundProduct.images);
         validation.setFieldValue("images", selectedFiles);
-        validation.setFieldValue(
-          "attribute",
-          foundProduct?.attribute.length > 0
-            ? JSON.parse(foundProduct?.attribute)
-            : foundProduct?.attribute
-        );
+        validation.setFieldValue("attribute", foundProduct?.attribute);
 
-        setAttributeData(
-          foundProduct?.attributeData.length > 0
-            ? JSON.parse(foundProduct?.attributeData)
-            : foundProduct?.attributeData
-        );
-        setSizeAndVar(
-          foundProduct?.variation.length > 0
-            ? JSON.parse(foundProduct.variation)
-            : foundProduct.variation
-        );
+        setAttributeData(foundProduct?.attributeData);
+        setSizeAndVar(foundProduct?.variation);
       } else {
         validation.resetForm();
       }
@@ -574,11 +541,7 @@ const EcommerceAddProduct = (props) => {
 
   useEffect(() => {
     if (productId._id !== undefined && attributeData.length > 0) {
-      setVariation(
-        foundProduct?.productVariation.length > 0
-          ? JSON.parse(foundProduct.productVariation)
-          : foundProduct.productVariation
-      );
+      setVariation(foundProduct.productVariation);
     }
   }, [attributeData]);
 

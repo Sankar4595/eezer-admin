@@ -237,7 +237,7 @@ function EcommerceProductDetail(props) {
                           <div className="hstack gap-3 flex-wrap">
                             <div>
                               <Link to="#" className="text-primary d-block">
-                                {JSON.parse(productDetails.brand).map((val) => {
+                                {productDetails.brand.map((val) => {
                                   return val.label;
                                 })}
                               </Link>
@@ -606,21 +606,17 @@ function EcommerceProductDetail(props) {
                                       Category
                                     </th>
                                     <td>
-                                      {JSON.parse(productDetails.category).map(
-                                        (val) => {
-                                          return val.label;
-                                        }
-                                      )}
+                                      {productDetails.category.map((val) => {
+                                        return val.label;
+                                      })}
                                     </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">Brand</th>
                                     <td>
-                                      {JSON.parse(productDetails.brand).map(
-                                        (val) => {
-                                          return val.label;
-                                        }
-                                      )}
+                                      {productDetails.brand.map((val) => {
+                                        return val.label;
+                                      })}
                                     </td>
                                   </tr>
                                   {/*<tr>

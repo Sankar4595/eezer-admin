@@ -107,6 +107,16 @@ class APIClient {
     });
   };
 
+  putFormData = (url, formData) => {
+    return axios.put(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực
+      credentials: "include",
+    });
+  };
+
   put = (url, data) => {
     return axios.put(url, data, {
       withCredentials: true, // Bật tính năng gửi cookie và thông tin xác thực

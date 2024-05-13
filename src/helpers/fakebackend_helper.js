@@ -172,7 +172,7 @@ export const addNewProduct = (product) =>
 
 // update Products
 export const updateProduct = (product) =>
-  api.patchFormData(url.UPDATE_PRODUCT + "/" + product.get("id"), product);
+  api.putFormData(url.UPDATE_PRODUCT + "/" + product.get("id"), product);
 
 export const uploadImage = (product) =>
   api.createFormData(url.UPLOAD_IMAGE, product);

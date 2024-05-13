@@ -309,17 +309,15 @@ const EcommerceProducts = (props) => {
                     Category:{" "}
                     <span className="fw-medium">
                       {product.row.original.category
-                        ? JSON.parse(product.row.original.category).map(
-                            (val) => {
-                              return val.label;
-                            }
-                          )
+                        ? product.row.original.category.map((val) => {
+                            return val.label;
+                          })
                         : "No categories"}
                     </span>{" "}
                     | Brand:{" "}
                     <span className="fw-medium">
                       {product.row.original.brand
-                        ? JSON.parse(product.row.original.brand).map((val) => {
+                        ? product.row.original.brand.map((val) => {
                             return val.label;
                           })
                         : "Unbranded"}
