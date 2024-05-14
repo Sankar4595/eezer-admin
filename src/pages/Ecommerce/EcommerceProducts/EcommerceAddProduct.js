@@ -66,8 +66,6 @@ const EcommerceAddProduct = (props) => {
       setcustomActiveTab(tab);
     }
   };
-  const [image, setImage] = useState(null);
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [variation, setVariation] = useState([]);
   const [sizeAndVar, setSizeAndVar] = useState([]);
   const dispatch = useDispatch();
@@ -81,14 +79,11 @@ const EcommerceAddProduct = (props) => {
       dispatch(onGetProducts());
     }
   }, [dispatch, products]);
-  const editorDesRef = useRef(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const editorSpecRef = useRef(null);
   const foundProduct = products.find(
     (product) => product._id === productId._id
   );
 
-  console.log("foundProduct: ", foundProduct);
   useEffect(() => {
     const fetchData = async () => {
       if (foundProduct) {
@@ -119,7 +114,10 @@ const EcommerceAddProduct = (props) => {
           foundProduct.discountenddate
         );
         validation.setFieldValue("cgst", parseInt(foundProduct.cgst));
-        validation.setFieldValue("sgst", parseInt(foundProduct.sgst));
+        validation.setFieldValue(
+          "gstvariation",
+          parseInt(foundProduct.gstvariation)
+        );
         validation.setFieldValue(
           "shippingdays",
           parseInt(foundProduct.shippingdays)
@@ -298,7 +296,7 @@ const EcommerceAddProduct = (props) => {
       weight: "",
       discountenddate: "",
       cgst: "",
-      sgst: "",
+      gstvariation: "",
       shippingdays: "",
       cod: false,
       productVariation: [],
@@ -306,7 +304,7 @@ const EcommerceAddProduct = (props) => {
       isPublish: null,
       images: [],
       type: [],
-      gender: "male",
+      gender: "",
     },
     validationSchema: Yup.object({
       name: Yup.string() //check biến isEditMode == true thì không cần test unique
@@ -356,7 +354,6 @@ const EcommerceAddProduct = (props) => {
       weight: Yup.string().optional("Please enter weight"),
       discountenddate: Yup.string().optional("Please enter discountenddate"),
       cgst: Yup.number().optional("Please enter cgst"),
-      sgst: Yup.number().optional("Please enter sgst"),
       shippingdays: Yup.number().optional("Please enter shippingdays"),
       cod: Yup.boolean().optional("Please enter cash on delivery"),
       productVariation: Yup.array().optional(
@@ -377,7 +374,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("weight", values.weight);
       newProduct.append("discountenddate", values.discountenddate);
       newProduct.append("cgst", values.cgst);
-      newProduct.append("sgst", values.sgst);
+      newProduct.append("gstvariation", values.gstvariation);
       newProduct.append("shippingdays", values.shippingdays);
       newProduct.append("cod", values.cod);
       newProduct.append("productVariation", JSON.stringify(variation));

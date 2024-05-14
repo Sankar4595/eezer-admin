@@ -19,74 +19,78 @@ const ProductVariant = ({
   validation,
   variation,
 }) => {
-  const [gst, setGst] = useState("include");
-
-  let formattedPrice;
-  let normalPrice;
-  let discountPrice =
-    (validation.values.originPrice * validation.values.discount) / 100;
-  let gstPercentage = validation.values.cgst + validation.values.sgst;
-
-  if (gst === "include") {
-    formattedPrice = new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(
-      discountPrice !== 0
-        ? validation.values.originPrice -
-            (discountPrice + (discountPrice * gstPercentage) / 100)
-        : validation.values.originPrice - gstPercentage / 100
-    );
-    normalPrice =
-      discountPrice !== 0
-        ? validation.values.originPrice -
-          (discountPrice + (discountPrice * gstPercentage) / 100)
-        : validation.values.originPrice - gstPercentage / 100;
-  } else {
-    let r = (validation.values.originPrice * gstPercentage) / 100;
-    formattedPrice = new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(
-      (discountPrice !== 0
-        ? validation.values.originPrice - discountPrice
-        : validation.values.originPrice) + r
-    );
-    normalPrice =
-      (discountPrice !== 0
-        ? validation.values.originPrice - discountPrice
-        : validation.values.originPrice) + r;
-  }
-
-  function getTotalQuantity(data) {
-    let totalQty = 0;
-    data.forEach((item) => {
-      totalQty += parseInt(item.quantity);
-    });
-    return totalQty;
-  }
-
-  const totalQty = getTotalQuantity(variation);
+  const [gstIncluded, setGstIncluded] = useState(true);
+  const [discountType, setDiscountType] = useState("flat");
+  const [gender, setGender] = useState("male");
+  const [formattedPrice, setFormatPrice] = useState();
+  const [totalQty, setTotalQty] = useState();
 
   useEffect(() => {
-    if (validation.values.price > validation.values.originPrice) {
-      setGst("exclude");
+    // Calculate price based on GST and discount
+    let price = calculatePrice(
+      validation.values.originPrice,
+      validation.values.discount
+    );
+    setFormatPrice(price);
+    validation.setFieldValue("price", price.toFixed());
+
+    setTotalQty(getTotalQuantity(variation));
+    validation.setFieldValue("quantity", getTotalQuantity(variation));
+
+    // Set gender and GST variation
+    validation.setFieldValue("gender", gender);
+    validation.setFieldValue(
+      "gstvariation",
+      gstIncluded ? "include" : "exclude"
+    );
+  }, [
+    validation.values.originPrice,
+    validation.values.discount,
+    variation,
+    gender,
+    gstIncluded,
+  ]);
+
+  const calculatePrice = (originPrice, discount) => {
+    let discountedPrice = originPrice;
+
+    if (gstIncluded) {
+      discountedPrice -= (originPrice * validation.values.cgst) / 100;
     } else {
-      setGst("include");
+      discountedPrice += (originPrice * validation.values.cgst) / 100;
     }
-    if (normalPrice) {
-      validation.setFieldValue("price", normalPrice.toFixed());
+
+    if (discountType === "flat") {
+      discountedPrice -= discount;
+    } else {
+      discountedPrice -= (originPrice * discount) / 100;
     }
-    if (totalQty) {
-      validation.setFieldValue("quantity", totalQty);
-    }
-  }, [validation.values.price, normalPrice, totalQty]);
+
+    return discountedPrice;
+  };
+
+  const getTotalQuantity = (data) => {
+    return data.reduce(
+      (totalQty, item) => totalQty + parseInt(item.quantity),
+      0
+    );
+  };
 
   const { Option } = Select;
   const selectAfter = (
-    <Select onChange={(e) => setGst(e)} defaultValue="include">
+    <Select
+      onChange={(e) => setGstIncluded(e === "include")}
+      defaultValue="include"
+    >
       <Option value="include">include</Option>
       <Option value="exclude">exclude</Option>
+    </Select>
+  );
+
+  const selectDiscount = (
+    <Select onChange={(e) => setDiscountType(e)} defaultValue="flat">
+      <Option value="flat">Flat</Option>
+      <Option value="%">%</Option>
     </Select>
   );
   return (
@@ -145,7 +149,8 @@ const ProductVariant = ({
             <Col sm={6}>
               <div className="mb-3">
                 <label className="form-label">Discount</label>
-                <Input
+                <InputNew
+                  addonAfter={selectDiscount}
                   type="number"
                   placeholder="Enter % Discount"
                   value={validation.values.discount || ""}
@@ -224,7 +229,7 @@ const ProductVariant = ({
           <Row>
             <Col sm={6}>
               <div className="mb-3">
-                <label className="form-label">CGST</label>
+                <label className="form-label">GST</label>
                 <InputNew
                   addonAfter={selectAfter}
                   type="number"
@@ -245,33 +250,6 @@ const ProductVariant = ({
                 {validation.errors.cgst && validation.touched.cgst && (
                   <div className="invalid-feedback">
                     {validation.errors.cgst}
-                  </div>
-                )}
-              </div>
-            </Col>
-            <Col sm={6}>
-              <div className="mb-3">
-                <label className="form-label">SGST</label>
-                <InputNew
-                  addonAfter={selectAfter}
-                  type="number"
-                  placeholder="Enter the sgst"
-                  value={validation.values.sgst || ""}
-                  onChange={validation.handleChange}
-                  invalid={validation.errors.sgst && validation.touched.sgst}
-                  name="sgst"
-                />
-                {/* <Input
-                  type="text"
-                  placeholder="Enter the sgst"
-                  value={validation.values.sgst || ""}
-                  onChange={validation.handleChange}
-                  invalid={validation.errors.sgst && validation.touched.sgst}
-                  name="sgst"
-                /> */}
-                {validation.errors.sgst && validation.touched.sgst && (
-                  <div className="invalid-feedback">
-                    {validation.errors.sgst}
                   </div>
                 )}
               </div>
@@ -311,8 +289,8 @@ const ProductVariant = ({
                 /> */}
                 <Select
                   style={{ width: "100%", height: "40px", borderRadius: "3px" }}
-                  onChange={(e) => validation.setFieldValue("gender", e)}
-                  value={validation.values.gender}
+                  onChange={(e) => setGender(e)}
+                  value={gender}
                 >
                   <Option value={"male"}>Male</Option>
                   <Option value={"female"}>Female</Option>
