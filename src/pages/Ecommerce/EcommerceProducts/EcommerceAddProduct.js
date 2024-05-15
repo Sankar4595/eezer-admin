@@ -387,6 +387,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("variation", JSON.stringify(sizeAndVar));
       newProduct.append("gender", values.gender);
       newProduct.append("price", values.price);
+      newProduct.append("discountType", values.discountType);
       if (isEditMode !== true) {
         values.images.forEach((file) => {
           newProduct.append("images", file);

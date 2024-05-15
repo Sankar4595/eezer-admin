@@ -33,6 +33,7 @@ const ProductVariant = ({
     );
     setFormatPrice(price);
     validation.setFieldValue("price", price.toFixed());
+    validation.setFieldValue("discountType", discountType);
 
     setTotalQty(getTotalQuantity(variation));
     validation.setFieldValue("quantity", getTotalQuantity(variation));
@@ -254,6 +255,25 @@ const ProductVariant = ({
                 )}
               </div>
             </Col>
+            <Col sm={6}>
+              <div className="mb-3">
+                <label className="form-label">For</label>
+                <Select
+                  style={{ width: "100%", height: "40px", borderRadius: "3px" }}
+                  onChange={(e) => setGender(e)}
+                  value={gender}
+                >
+                  <Option value={"male"}>Male</Option>
+                  <Option value={"female"}>Female</Option>
+                  <Option value={"both"}>Both</Option>
+                </Select>
+                {validation.errors.gender && validation.touched.gender && (
+                  <div className="invalid-feedback">
+                    {validation.errors.gender}
+                  </div>
+                )}
+              </div>
+            </Col>
           </Row>
           <Row>
             <Col sm={6}>
@@ -270,35 +290,6 @@ const ProductVariant = ({
                 {validation.errors.video && validation.touched.video && (
                   <div className="invalid-feedback">
                     {validation.errors.video}
-                  </div>
-                )}
-              </div>
-            </Col>
-            <Col sm={6}>
-              <div className="mb-3">
-                <label className="form-label">For</label>
-                {/* <Input
-                  type="text"
-                  placeholder="Enter here..."
-                  value={validation.values.gender || ""}
-                  onChange={validation.handleChange}
-                  invalid={
-                    validation.errors.gender && validation.touched.gender
-                  }
-                  name="gender"
-                /> */}
-                <Select
-                  style={{ width: "100%", height: "40px", borderRadius: "3px" }}
-                  onChange={(e) => setGender(e)}
-                  value={gender}
-                >
-                  <Option value={"male"}>Male</Option>
-                  <Option value={"female"}>Female</Option>
-                  <Option value={"both"}>Both</Option>
-                </Select>
-                {validation.errors.gender && validation.touched.gender && (
-                  <div className="invalid-feedback">
-                    {validation.errors.gender}
                   </div>
                 )}
               </div>

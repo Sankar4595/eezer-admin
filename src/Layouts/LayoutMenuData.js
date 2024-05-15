@@ -91,14 +91,14 @@ const Navdata = () => {
       subItems: [
         {
           id: 1,
-          label: " Add New Product",
-          link: "/apps-ecommerce-add-product",
+          label: " All Products",
+          link: "/apps-ecommerce-products",
           parentId: "appsecommerce",
         },
         {
           id: 2,
-          label: " All Products",
-          link: "/apps-ecommerce-products",
+          label: " Add New Product",
+          link: "/apps-ecommerce-add-product",
           parentId: "appsecommerce",
         },
         // {
