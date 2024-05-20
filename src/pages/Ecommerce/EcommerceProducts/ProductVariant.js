@@ -102,7 +102,7 @@ const ProductVariant = ({
         </CardHeader>
 
         <CardBody>
-          <Row>
+          {/* <Row>
             <Col sm={6}>
               <div className="mb-3">
                 <label className="form-label">Old Price</label>
@@ -144,7 +144,7 @@ const ProductVariant = ({
                 )}
               </div>
             </Col>
-          </Row>
+          </Row> */}
 
           <Row>
             <Col sm={6}>

@@ -365,7 +365,7 @@ const EcommerceAddProduct = (props) => {
       const newProduct = new FormData();
       // Thêm dữ liệu sản phẩm
       newProduct.append("name", values.name);
-      newProduct.append("originPrice", values.originPrice);
+      newProduct.append("originPrice", sizeAndVar[0].oldPrice);
       newProduct.append("quantity", values.quantity);
       newProduct.append("discount", values.discount);
       newProduct.append("isPublish", values.isPublish.value);
@@ -386,7 +386,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("type", JSON.stringify(values.type));
       newProduct.append("variation", JSON.stringify(sizeAndVar));
       newProduct.append("gender", values.gender);
-      newProduct.append("price", values.price);
+      newProduct.append("price", sizeAndVar[0].price);
       newProduct.append("discountType", values.discountType);
       if (isEditMode !== true) {
         values.images.forEach((file) => {
@@ -398,9 +398,6 @@ const EcommerceAddProduct = (props) => {
         validation.resetForm();
       } else {
         newProduct.append("id", productId._id);
-        // for (const [key, value] of newProduct.entries()) {
-        //   console.log(`Key: ${key}, Value: ${value}`);
-        // }
         await dispatch(onUpdateProduct(newProduct));
         await dispatch(onGetProducts());
         history("/apps-ecommerce-products");
@@ -422,24 +419,28 @@ const EcommerceAddProduct = (props) => {
   }, [validation.values.description, validation.values.specification]);
 
   const handleAttributeDataChange = (e, value) => {
-    console.log("value: ", value);
     setAttributeData((prev) => {
       const index = prev.findIndex((item) => item.value === value.value);
       if (index !== -1) {
         const updatedData = [...prev];
-        updatedData[index].data = e;
+        updatedData[index] = {
+          ...updatedData[index],
+          data: e,
+        };
         return updatedData;
       } else {
         return [...prev, { ...value, data: e }];
       }
     });
   };
+
   const generateCombinations = (
     data,
     currentCombination = [],
     index = 0,
     combinations = []
   ) => {
+    console.log("data: ", data);
     if (index === data?.length) {
       combinations.push([...currentCombination]);
       return;
@@ -525,7 +526,6 @@ const EcommerceAddProduct = (props) => {
     data: validation.values.color,
   };
   console.log("variation: ", variation);
-  console.log("validation.values.color: ", validation.values.color);
   useEffect(() => {
     if (attributeData.length > 0 || validation.values.color.length > 0) {
       const generatedVariations = generateCombinations([
