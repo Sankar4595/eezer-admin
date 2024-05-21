@@ -322,7 +322,6 @@ const EcommerceAddProduct = (props) => {
             return productLowerCaseName === trimmedLowerCaseValue;
           });
         }),
-      originPrice: Yup.number().required("Please enter product originPrice"),
       quantity: Yup.number().required("Please enter quantity"),
       isPublish: Yup.object()
         .nullable(false)
