@@ -9,24 +9,26 @@ import {
   Nav,
   NavItem,
   NavLink,
-  TabContent,
-  TabPane,
-  UncontrolledCollapse,
   Row,
-  Card,
-  CardHeader,
-  Col,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  Label,
+  Input,
 } from "reactstrap";
 import classnames from "classnames";
+import { FaClone } from "react-icons/fa";
 
 // RangeSlider
-import Nouislider from "nouislider-react";
 import "nouislider/distribute/nouislider.css";
 import DeleteModal from "../../../Components/Common/DeleteModal";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
-import { Rating, Published, Price, NewPrice } from "./EcommerceProductCol";
+import { Published, Price, NewPrice } from "./EcommerceProductCol";
 //Import data
 //import { products } from "../../../common/data";
 
@@ -38,13 +40,13 @@ import {
   getBrands as onGetBrands,
 } from "../../../slices/thunks";
 import { isEmpty } from "lodash";
-import Select from "react-select";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { createSelector } from "reselect";
+import { addNewCloneProduct as onAddNewProduct } from "../../../slices/thunks";
 
 const SingleOptions = [
   { value: "Watches", label: "Watches" },
@@ -76,6 +78,33 @@ const EcommerceProducts = (props) => {
   const products = useSelector(selectDashboardData);
   const categories = useSelector(selectCategorysData);
   const brands = useSelector(selectBrandsData);
+  const [modal, setModal] = useState(false);
+  const [prdNew, setPrdNew] = useState();
+  const [name, setName] = useState("");
+
+  function removeUpdatedAt(obj) {
+    const { updatedAt, __v, name_slug, _id, ...remainingProperties } = obj;
+    return remainingProperties;
+  }
+
+  const toggle = (e) => {
+    let res = removeUpdatedAt(e);
+    setPrdNew(res);
+    setModal(!modal);
+  };
+
+  const handleOnOkay = async () => {
+    let newProduct = {
+      ...prdNew,
+      name: name,
+    };
+    try {
+      await dispatch(onAddNewProduct(newProduct));
+      setModal(false);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
 
   const [productList, setProductList] = useState([]);
   const [activeTab, setActiveTab] = useState("1");
@@ -386,14 +415,6 @@ const EcommerceProducts = (props) => {
           return <Published {...cellProps} />;
         },
       },
-      // {
-      //   Header: "Rating",
-      //   accessor: "rating",
-      //   filterable: false,
-      //   Cell: (cellProps) => {
-      //     return <Rating {...cellProps} />;
-      //   },
-      // },
       {
         Header: "Action",
         Cell: (cellProps) => {
@@ -440,6 +461,18 @@ const EcommerceProducts = (props) => {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
+          );
+        },
+      },
+      {
+        Header: "Clone",
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div onClick={() => toggle(cellProps.row.original)}>
+                <FaClone style={{ color: "#FF7F5D", cursor: "pointer" }} />
+              </div>
+            </>
           );
         },
       },
@@ -492,162 +525,6 @@ const EcommerceProducts = (props) => {
         <BreadCrumb title="Product" pageTitle="E-commerce" />
 
         <Row>
-          {/* <Col xl={3} lg={4}> */}
-          {/* <Card>
-              <CardHeader>
-                <div className="d-flex mb-3">
-                  <div className="flex-grow-1">
-                    <h5 className="fs-16">Filter</h5>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <Link
-                      to="#"
-                      className="text-decoration-underline"
-                      onClick={() => getProductsByCategory("all")}
-                    >
-                      Clear all
-                    </Link>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <div className="accordion accordion-flush">
-                <div className="card-body border-bottom">
-                  <div>
-                    <p className="text-muted text-uppercase fs-12 fw-medium mb-2">
-                      Category
-                    </p>
-
-                    <ul className="list-unstyled mb-0 filter-list">
-                      {categories.map((category) => {
-                        const isActive = cate === category.name ? "active" : "";
-                        return (
-                          <li key={category.id}>
-                            <Link
-                              to="#"
-                              className={`d-flex py-1 align-items-center ${isActive}`}
-                              onClick={() =>
-                                getProductsByCategory(category.name)
-                              }
-                            >
-                              <div className="flex-grow-1">
-                                <h5 className="fs-13 mb-0 listname">
-                                  {category.name}
-                                </h5>
-                              </div>
-                              <div className="flex-shrink-0 ms-2">
-                                <span className="badge bg-light text-muted">
-                                  {category?.products?.length}
-                                </span>
-                              </div>
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="card-body border-bottom">
-                  <p className="text-muted text-uppercase fs-12 fw-medium mb-4">
-                    Price
-                  </p>
-
-                  <Nouislider
-                    range={{
-                      min: minProductPrice,
-                      max: maxProductPrice,
-                    }}
-                    start={[minProductPrice, maxProductPrice]}
-                    connect
-                    step={500}
-                    data-slider-color="primary"
-                    id="product-price-range"
-                    onSlide={(values, handle) => {
-                      // Gọi hàm onUpdate khi giá trị trên thanh trượt thay đổi
-                      onPriceChange(values);
-                    }}
-                  />
-
-                  <div className="formCost d-flex gap-2 align-items-center mt-3">
-                    <input
-                      className="form-control form-control-sm"
-                      type="text"
-                      id="minCost"
-                      value={sliderValues[0]}
-                      onChange={(e) => handleMinCostChange(e)}
-                    />
-                    <span className="fw-semibold text-muted">to</span>
-                    <input
-                      className="form-control form-control-sm"
-                      type="text"
-                      id="maxCost"
-                      value={sliderValues[1]}
-                      onChange={(e) => handleMaxCostChange(e)}
-                    />
-                  </div>
-                </div>
-
-                <div className="accordion-item">
-                  <h2 className="accordion-header">
-                    <button
-                      className="accordion-button bg-transparent shadow-none"
-                      type="button"
-                      id="flush-headingBrands"
-                    >
-                      <span className="text-muted text-uppercase fs-12 fw-medium">
-                        Trademark
-                      </span>{" "}
-                      <span className="badge bg-success rounded-pill align-middle ms-1">
-                        {brands.length}
-                      </span>
-                    </button>
-                  </h2>
-                  <UncontrolledCollapse
-                    toggler="#flush-headingBrands"
-                    defaultOpen
-                  >
-                    <div
-                      id="flush-collapseBrands"
-                      className="accordion-collapse collapse show"
-                      aria-labelledby="flush-headingBrands"
-                    >
-                      <div className="accordion-body text-body pt-0">
-                        <div className="d-flex flex-column gap-2 mt-3">
-                          {brands.map((brand) => (
-                            <div className="form-check" key={brand.id}>
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id={`productBrandRadio${brand.id}`}
-                                defaultChecked={brand.defaultChecked}
-                                onChange={() => getProductsByBrand(brand)}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor={`productBrandRadio${brand.id}`}
-                              >
-                                {brand.name}
-                              </label>
-                            </div>
-                          ))}
-                          <div>
-                            <button
-                              type="button"
-                              className="btn btn-link text-decoration-none text-uppercase fw-medium p-0"
-                            >
-                              {brands.length} More
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </UncontrolledCollapse>
-                </div>
-              </div>
-            </Card> */}
-          {/* </Col> */}
-
           <div style={{ width: "100%" }} className="col-xl-9 col-lg-8">
             <div>
               <div className="card">
@@ -773,23 +650,34 @@ const EcommerceProducts = (props) => {
                     </div>
                   )}
                 </div>
-
-                {/* <div className="card-body">
-                  <TabContent className="text-muted">
-                    <TabPane>
-                      <div
-                        id="table-product-list-all"
-                        className="table-card gridjs-border-none pb-2"
-                      >
-                      </div>
-                    </TabPane>
-                  </TabContent>
-                </div> */}
               </div>
             </div>
           </div>
         </Row>
       </Container>
+      <Modal isOpen={modal}>
+        <ModalHeader>Clone Product</ModalHeader>
+        <ModalBody>
+          <Form>
+            <Label for="newName">New Product Name</Label>
+            <Input
+              id="newPrdName"
+              name="prdName"
+              placeholder="with a placeholder"
+              type="text"
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Form>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => handleOnOkay()}>
+            Ok
+          </Button>{" "}
+          <Button color="secondary" onClick={() => setModal(false)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

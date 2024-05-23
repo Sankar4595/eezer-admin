@@ -170,6 +170,9 @@ export const deleteProducts = (product) =>
 export const addNewProduct = (product) =>
   api.createFormData(url.ADD_NEW_PRODUCT, product);
 
+export const addNewCloneProduct = (product) =>
+  api.create(url.ADD_NEWCLONE_PRODUCT, product);
+
 // update Products
 export const updateProduct = (product) =>
   api.putFormData(url.UPDATE_PRODUCT + "/" + product.get("id"), product);

@@ -37,6 +37,7 @@ export const GET_PRODUCTS = "/apps/product";
 export const GET_PRODUCT_BY_ID = "/apps/product";
 export const DELETE_PRODUCT = "/apps/product";
 export const ADD_NEW_PRODUCT = "/apps/product";
+export const ADD_NEWCLONE_PRODUCT = "/apps/product/clone";
 export const UPDATE_PRODUCT = "/apps/product";
 export const UPLOAD_IMAGE = "/apps/product/uploadImage";
 

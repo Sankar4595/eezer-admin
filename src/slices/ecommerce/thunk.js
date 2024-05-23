@@ -17,6 +17,7 @@ import {
   updateCustomer as updateCustomerApi,
   deleteCustomer as deleteCustomerApi,
   addNewProduct as addNewProductApi,
+  addNewCloneProduct as addCloneNewProductApi,
   updateProduct as updateProductApi,
   uploadImage as uploadImageApi,
   getBrands as getBrandsApi,
@@ -147,6 +148,21 @@ export const addNewProduct = createAsyncThunk(
   async (product) => {
     try {
       const response = addNewProductApi(product);
+      const data = await response;
+      toast.success("Product Added Successfully", { autoClose: 3000 });
+      return data;
+    } catch (error) {
+      toast.error("Product Added Failed", { autoClose: 3000 });
+      throw error;
+    }
+  }
+);
+
+export const addNewCloneProduct = createAsyncThunk(
+  "ecommerce/addNewProduct",
+  async (product) => {
+    try {
+      const response = addCloneNewProductApi(product);
       const data = await response;
       toast.success("Product Added Successfully", { autoClose: 3000 });
       return data;
