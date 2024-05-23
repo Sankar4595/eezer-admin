@@ -141,145 +141,6 @@ const EcommerceAddProduct = (props) => {
     fetchData();
   }, [productId, products, isEditMode]);
 
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleCardMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleCardMouseLeave = () => {
-    setIsHovered(false);
-  };
-  const [selectedFiles, setselectedFiles] = useState([]);
-  function handleAcceptedFiles(files, fromClipboard = false) {
-    const processedFiles = files.map((file) => {
-      const randomFileName = generateRandomString(10);
-      const newFile = new File([file], `${randomFileName}.png`, {
-        type: file.type,
-      });
-
-      return Object.assign(newFile, {
-        preview: URL.createObjectURL(file),
-        formattedSize: formatBytes(file.size),
-      });
-    });
-
-    if (fromClipboard) {
-      // Nếu từ clipboard, chỉ thêm file đầu tiên trong mảng processedFiles
-      setselectedFiles((prevFiles) => [...prevFiles, processedFiles[0]]);
-    } else {
-      // Logic cho việc thêm file thủ công
-      if (selectedFiles.length === 0) {
-        setselectedFiles(processedFiles);
-      } else if (selectedFiles.length === 1) {
-        const newFiles = processedFiles.slice(0, 2);
-        setselectedFiles([...selectedFiles, ...newFiles]);
-      } else {
-        setselectedFiles([...selectedFiles, ...processedFiles]);
-      }
-    }
-  }
-
-  function handleRemoveImage(index) {
-    // Tạo một bản sao của danh sách ảnh đã chọn
-    const updatedFiles = [...selectedFiles];
-    // Loại bỏ ảnh tại chỉ mục index
-    updatedFiles.splice(index, 1);
-    // Cập nhật danh sách ảnh
-    setselectedFiles(updatedFiles);
-    // Cập nhật trường images trong Formik với danh sách ảnh mới
-    validation.setFieldValue("images", updatedFiles);
-  }
-  function generateRandomString(length) {
-    let result = "";
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const charactersLength = characters.length;
-
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charactersLength);
-      result += characters.charAt(randomIndex);
-    }
-
-    return result;
-  }
-  useEffect(() => {
-    const handlePaste = (event) => {
-      const clipboardData = event.clipboardData || window.clipboardData;
-      const items = clipboardData.items || [];
-
-      // Lặp từ cuối lên đầu
-      for (let i = items.length - 1; i >= 0; i--) {
-        const item = items[i];
-        if (item.type.indexOf("image") !== -1) {
-          const blob = item.getAsFile();
-          const randomFileName = generateRandomString(10); // Độ dài tên file mong muốn
-          const file = new File([blob], `${randomFileName}.png`, {
-            type: blob.type,
-          });
-          handleAcceptedFiles([file, ...selectedFiles], true);
-          break; // Dừng sau khi xử lý ảnh đầu tiên (gần nhất)
-        }
-      }
-    };
-    document.addEventListener("paste", handlePaste);
-    return () => {
-      document.removeEventListener("paste", handlePaste);
-    };
-  }, [selectedFiles]);
-  useEffect(() => {
-    validation.setFieldValue("images", selectedFiles);
-  }, [selectedFiles]);
-
-  function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-
-  const IsPublishOptions = [
-    {
-      options: [
-        { label: "Hidden", value: false },
-        { label: "Show", value: true },
-      ],
-    },
-  ];
-  const handleCategoryChange = (categoryId) => {
-    validation.setFieldValue("category", categoryId);
-  };
-  const handleCategoryBlur = () => {
-    validation.handleBlur;
-  };
-  const handleSubCategoryChange = (type) => {
-    validation.setFieldValue("type", type);
-  };
-  const handleSubCategoryBlur = () => {
-    validation.handleBlur;
-  };
-  const handleBrandChange = (brandId) => {
-    validation.setFieldValue("brand", brandId);
-  };
-  const handleColorChange = (colorId) => {
-    validation.setFieldValue("color", colorId);
-  };
-  const handleattributeChange = (attributeId) => {
-    validation.setFieldValue("attribute", attributeId);
-  };
-  const handleBrandBlur = () => {
-    validation.handleBlur;
-  };
-  const handleColorBlur = () => {
-    validation.handleBlur;
-  };
-  const handleattributeBlur = () => {
-    validation.handleBlur;
-  };
-  //json gửi đi
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -387,10 +248,10 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("gender", values.gender);
       newProduct.append("price", sizeAndVar[0].price);
       newProduct.append("discountType", values.discountType);
+      values.images.forEach((file) => {
+        newProduct.append("images", file);
+      });
       if (isEditMode !== true) {
-        values.images.forEach((file) => {
-          newProduct.append("images", file);
-        });
         await dispatch(onAddNewProduct(newProduct));
         await dispatch(onGetProducts());
         history("/apps-ecommerce-products");
@@ -405,7 +266,142 @@ const EcommerceAddProduct = (props) => {
     },
   });
 
-  // Sử dụng state để quản lý dữ liệu CKEditor
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleCardMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleCardMouseLeave = () => {
+    setIsHovered(false);
+  };
+  const [selectedFiles, setselectedFiles] = useState([]);
+  function handleAcceptedFiles(files, fromClipboard = false) {
+    const processedFiles = files.map((file) => {
+      const randomFileName = generateRandomString(10);
+      const newFile = new File([file], `${randomFileName}.png`, {
+        type: file.type,
+      });
+
+      return Object.assign(newFile, {
+        preview: URL.createObjectURL(file),
+        formattedSize: formatBytes(file.size),
+      });
+    });
+
+    if (fromClipboard) {
+      // Nếu từ clipboard, chỉ thêm file đầu tiên trong mảng processedFiles
+      setselectedFiles((prevFiles) => [...prevFiles, processedFiles[0]]);
+    } else {
+      // Logic cho việc thêm file thủ công
+      if (selectedFiles.length === 0) {
+        setselectedFiles(processedFiles);
+      } else if (selectedFiles.length === 1) {
+        const newFiles = processedFiles.slice(0, 2);
+        setselectedFiles([...selectedFiles, ...newFiles]);
+      } else {
+        setselectedFiles([...selectedFiles, ...processedFiles]);
+      }
+    }
+  }
+
+  function handleRemoveImage(index) {
+    const updatedFiles = [...selectedFiles];
+    updatedFiles.splice(index, 1);
+    setselectedFiles(updatedFiles);
+    validation.setFieldValue("images", updatedFiles);
+  }
+
+  function generateRandomString(length) {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charactersLength);
+      result += characters.charAt(randomIndex);
+    }
+
+    return result;
+  }
+  useEffect(() => {
+    const handlePaste = (event) => {
+      const clipboardData = event.clipboardData || window.clipboardData;
+      const items = clipboardData.items || [];
+
+      // Lặp từ cuối lên đầu
+      for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        if (item.type.indexOf("image") !== -1) {
+          const blob = item.getAsFile();
+          const randomFileName = generateRandomString(10); // Độ dài tên file mong muốn
+          const file = new File([blob], `${randomFileName}.png`, {
+            type: blob.type,
+          });
+          handleAcceptedFiles([file, ...selectedFiles], true);
+          break; // Dừng sau khi xử lý ảnh đầu tiên (gần nhất)
+        }
+      }
+    };
+    document.addEventListener("paste", handlePaste);
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, [selectedFiles]);
+  useEffect(() => {
+    validation.setFieldValue("images", selectedFiles);
+  }, [selectedFiles]);
+
+  function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  }
+
+  const IsPublishOptions = [
+    {
+      options: [
+        { label: "Hidden", value: false },
+        { label: "Show", value: true },
+      ],
+    },
+  ];
+  const handleCategoryChange = (categoryId) => {
+    validation.setFieldValue("category", categoryId);
+  };
+  const handleCategoryBlur = () => {
+    validation.handleBlur;
+  };
+  const handleSubCategoryChange = (type) => {
+    validation.setFieldValue("type", type);
+  };
+  const handleSubCategoryBlur = () => {
+    validation.handleBlur;
+  };
+  const handleBrandChange = (brandId) => {
+    validation.setFieldValue("brand", brandId);
+  };
+  const handleColorChange = (colorId) => {
+    validation.setFieldValue("color", colorId);
+  };
+  const handleattributeChange = (attributeId) => {
+    validation.setFieldValue("attribute", attributeId);
+  };
+  const handleBrandBlur = () => {
+    validation.handleBlur;
+  };
+  const handleColorBlur = () => {
+    validation.handleBlur;
+  };
+  const handleattributeBlur = () => {
+    validation.handleBlur;
+  };
+
   const [editorDesData, setEditorDesData] = useState(
     validation.values.description
   );
@@ -439,7 +435,6 @@ const EcommerceAddProduct = (props) => {
     index = 0,
     combinations = []
   ) => {
-    console.log("data: ", data);
     if (index === data?.length) {
       combinations.push([...currentCombination]);
       return;
@@ -524,7 +519,7 @@ const EcommerceAddProduct = (props) => {
     value: "color",
     data: validation.values.color,
   };
-  console.log("variation: ", variation);
+
   useEffect(() => {
     if (attributeData.length > 0 || validation.values.color.length > 0) {
       const generatedVariations = generateCombinations([
@@ -534,7 +529,6 @@ const EcommerceAddProduct = (props) => {
       setVariation(generatedVariations);
     }
   }, [attributeData, validation.values.color]);
-  console.log("attributeData: ", attributeData);
 
   useEffect(() => {
     if (productId._id !== undefined && attributeData.length > 0) {
