@@ -225,8 +225,8 @@ const EcommerceAddProduct = (props) => {
       const newProduct = new FormData();
       // Thêm dữ liệu sản phẩm
       newProduct.append("name", values.name);
-      newProduct.append("originPrice", sizeAndVar[0].oldPrice);
-      newProduct.append("quantity", values.quantity);
+      newProduct.append("originPrice", sizeAndVar[0]?.oldPrice);
+      newProduct.append("quantity", sizeAndVar[0]?.quantity);
       newProduct.append("discount", values.discount);
       newProduct.append("isPublish", values.isPublish.value);
       newProduct.append("description", values.description);
@@ -246,7 +246,7 @@ const EcommerceAddProduct = (props) => {
       newProduct.append("type", JSON.stringify(values.type));
       newProduct.append("variation", JSON.stringify(sizeAndVar));
       newProduct.append("gender", values.gender);
-      newProduct.append("price", sizeAndVar[0].price);
+      newProduct.append("price", sizeAndVar[0]?.price);
       newProduct.append("discountType", values.discountType);
       values.images.forEach((file) => {
         newProduct.append("images", file);

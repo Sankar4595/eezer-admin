@@ -36,7 +36,7 @@ const ProductVariant = ({
     validation.setFieldValue("discountType", discountType);
 
     setTotalQty(getTotalQuantity(variation));
-    validation.setFieldValue("quantity", getTotalQuantity(variation));
+    validation.setFieldValue("quantity", variation[0]?.quantity);
 
     // Set gender and GST variation
     validation.setFieldValue("gender", gender);
